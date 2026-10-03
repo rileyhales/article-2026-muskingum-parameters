@@ -1,0 +1,40 @@
+# Front matter and LaTeX settings for the Elsevier (elsarticle) build of manuscript.md. The title comes from the
+# level-one heading of the Markdown and the abstract from its Abstract section.
+
+# preprint, 12pt, author-year citations: the elsarticle layout for submission. For a typeset preview, replace preprint
+# with 1p, 3p, or 5p (single to double column); add review for double spacing.
+classoption: [preprint, 12pt, authoryear]
+biblio-style: elsarticle-harv
+bibliography: references.bib
+linenumbers: true
+# journal: Journal of Hydrology   # printed as "Preprint submitted to ..."; elsarticle says Elsevier when unset
+
+mainfont: STIXTwoText
+mainfontoptions: [Extension=.otf, UprightFont=*-Regular, BoldFont=*-Bold, ItalicFont=*-Italic, BoldItalicFont=*-BoldItalic]
+mathfont: STIXTwoMath-Regular.otf
+
+author:
+  - name: Riley Hales
+    corresponding: true
+    # affiliation: [a]
+    # email:
+# affiliation:
+#   - id: a
+#     organization:
+#     city:
+#     country:
+
+keywords:
+  - Muskingum routing
+  - Courant number
+  - numerical positivity
+  - river network
+  - hydrofabric
+  - TDX-Hydro
+
+highlights:
+  - Nearly half of TDX-Hydro reaches have a negative Muskingum coefficient at 1 h
+  - Reaches too short for the time step carry negative discharge under real forcing
+  - One downstream reach damps a short reach's error about fifteen-fold
+  - Substeps that keep x remove diffusion and raise peaks by up to 41% of the rise
+  - Subcycles and diffusion-preserving substeps restore positivity at any time step

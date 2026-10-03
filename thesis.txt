@@ -1,0 +1,47 @@
+This paper needs to take a different tone.
+
+The purpose of this paper is to explore the errors in muskingum routing and their mitigation options which determines the minimum feature set
+required for applying muskingum routing to large numerical models such as national and global scale options in circulation today.
+
+It will explore this problem by doing the following:
+
+1. mathematical treatment of the sources of potential errors.
+    - improper parameterization of k, x, and dt.
+2. Why these errors become prevalent in large scale models.
+    - analysis of national and global scale hydrography datasets, namely NHDPlus, HydroSHEDS, NWM Next Gen, TDX-Hydro
+    - estimated incidence of problematic reach sizes in these datasets.
+3. Theoretical and mathematical exploration of options available to avoid these errors.
+4. Exploration of how two routing algorithms, t-route and RAPID, avoid these errors, if they do.
+5. Exploring quantitatively through test cases:
+    - how these errors manifest in models under real forcing conditions.
+    - the significance in the difference in answers when these errors are not addressed.
+    - the efficacy of mitigation options to avoid these errors.
+6. Discussion of the implications of:
+    - the prevalence of these errors in large scale models.
+    - required minimum feature set to mitigate muskingum errors.
+    - best practices for large models using muskingum routing.
+
+This paper will need to have a literature review component and mathematical treatment component.
+
+this paper needs to lead to a few major outcomes as a result of the muskingum exploration set in the hypothesis:
+- introduce the river-route code whose numerical stabilization procedure implements the necessary guard rails.
+- benchmark the performance and accuracy of the river-route code from strictly numerical perspective, not a calibration or gauge comparison perspective.
+
+This paper should clearly express that it is not intended to be a model calibration exercise, but purely a numerical exploration of how it must
+be carried out.
+
+Some of the conclusions should include at least:
+1. Do no clamp flows to zero when they go negative. this is a band-aid to hide invalid results that introduces errors that are correctable in other ways.
+2. Do not modify the hydrography purely for the purpose of making a simpler topological network. There are routing algorithmic means to address real life situations.
+3. It is better to have fewer, longer reaches that can be validly subdivided into short reaches than to have many short reaches which require assumptions to handle.
+4. the correct definition of the Q solved for by muskingum is the flow at the next time step that, when averaged with the flow at the previous time step,
+    represents the average flow over the interval. This is not the same thing as the instantaneous discharge at the end of the time step. This is not the same
+    thing as the average flow over the time step on its own. This is a subtle but important distinction that is often overlooked in the literature and in practice.
+5. The muskingum method is a numerical approximation of the continuity equation and inventory equation.
+
+Discussion items include:
+- given the choice of dt, model builders often take the approach that dt is purely a matter of how many time steps they want to store a result for and assume
+    that higher resolution on the time step is always better. You should pick a dt that is appropriate for the reach's travel time. This is a Currant like condition
+    that is often overlooked in the literature and in practice.
+- You should not assume you need to pick a higher resolution time step to ensure valid results. You should consider the temporal resolution of the forcing data which
+    is quite often 1 hourly accumulation at the highest resolution when talking about continental or larger scale models and often 3 hourly or lower resolution.

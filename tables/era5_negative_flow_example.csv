@@ -1,0 +1,2 @@
+river,negative_share,too_short,negative_hours,lowest_m3s,worst_year,k_s,length_m,order,area_km2,year,c3,c4,reference_30_min,reference_30_max,reference_30_negative_hours,standard_3600_min,standard_3600_max,standard_3600_negative_hours,inflate-k_3600_min,inflate-k_3600_max,inflate-k_3600_negative_hours,subcycles_3600_min,subcycles_3600_max,subcycles_3600_negative_hours
+720047025,0.116391,True,62484,-0.0586827,2013,686,343.2,2,9.74855,2013,-0.532698,1.5327,1.4013e-45,0.0924273,0,-0.0586827,0.162173,3146,0,0.107767,0,0,0.104924,0

@@ -1,0 +1,36 @@
+Treatment,Measure,30 s,1 min,5 min,10 min,15 min,30 min,60 min
+Standard,"Peak, bias (% of rise)",0.0,0.0,0.0,0.0,0.0,0.0,+1.2
+,"Peak, mean abs. error (% of rise)",0.0,0.1,0.6,1.2,1.8,3.0,10.2
+,"Peak time, bias (h)",0.00,0.00,−0.03,−0.08,−0.13,−0.35,−0.70
+,"Peak time, mean abs. error (h)",0.00,0.00,0.04,0.08,0.14,0.37,0.70
+,"Volume, mean abs. error (%)",0.000,0.002,0.002,0.002,0.002,0.002,0.002
+Substeps,"Peak, bias (% of rise)",+41.1,+38.6,+28.1,+21.8,+17.7,+10.5,+6.6
+,"Peak, mean abs. error (% of rise)",45.4,42.3,30.3,23.2,18.8,12.2,12.1
+,"Peak time, bias (h)",+1.50,+1.49,+1.21,+0.86,+0.79,+0.59,−0.15
+,"Peak time, mean abs. error (h)",3.52,3.39,2.64,2.10,1.84,1.34,1.03
+,"Volume, mean abs. error (%)",0.003,0.002,0.002,0.002,0.002,0.002,0.002
+"Substeps, x adjusted","Peak, bias (% of rise)",−4.2,−4.2,−4.3,−4.7,−5.0,−4.9,−0.4
+,"Peak, mean abs. error (% of rise)",5.5,5.4,5.4,5.5,5.8,6.6,9.6
+,"Peak time, bias (h)",+0.17,+0.17,+0.15,+0.11,+0.08,−0.10,−0.60
+,"Peak time, mean abs. error (h)",0.44,0.44,0.42,0.40,0.39,0.40,0.69
+,"Volume, mean abs. error (%)",0.063,0.017,0.002,0.002,0.002,0.002,0.002
+Subcycles,"Peak, bias (% of rise)",a,0.0,0.0,0.0,0.0,0.0,+1.1
+,"Peak, mean abs. error (% of rise)",a,0.1,0.6,1.2,1.8,3.0,10.0
+,"Peak time, bias (h)",a,0.00,−0.03,−0.08,−0.13,−0.34,−0.69
+,"Peak time, mean abs. error (h)",a,0.00,0.04,0.08,0.14,0.36,0.69
+,"Volume, mean abs. error (%)",a,0.002,0.002,0.002,0.002,0.002,0.002
+Stabilized,"Peak, bias (% of rise)",+41.1,+38.6,+28.1,+21.8,+17.7,+10.5,+6.5
+,"Peak, mean abs. error (% of rise)",45.4,42.3,30.3,23.2,18.8,12.2,11.8
+,"Peak time, bias (h)",+1.50,+1.49,+1.21,+0.86,+0.79,+0.59,−0.13
+,"Peak time, mean abs. error (h)",3.52,3.39,2.64,2.10,1.84,1.34,1.03
+,"Volume, mean abs. error (%)",0.003,0.002,0.002,0.002,0.002,0.002,0.002
+Inflate k,"Peak, bias (% of rise)",a,0.0,0.0,0.0,−0.1,−0.1,+1.1
+,"Peak, mean abs. error (% of rise)",a,0.1,0.6,1.2,1.8,3.1,10.3
+,"Peak time, bias (h)",a,0.00,−0.03,−0.07,−0.12,−0.30,−0.50
+,"Peak time, mean abs. error (h)",a,0.00,0.04,0.08,0.14,0.37,0.81
+,"Volume, mean abs. error (%)",a,0.002,0.002,0.002,0.002,0.002,0.002
+Merge,"Peak, bias (% of rise)",a,0.0,0.0,0.0,0.0,+0.1,+2.1
+,"Peak, mean abs. error (% of rise)",a,0.1,0.6,1.3,1.8,3.1,10.6
+,"Peak time, bias (h)",a,0.00,−0.03,−0.08,−0.14,−0.39,−0.91
+,"Peak time, mean abs. error (h)",a,0.00,0.04,0.09,0.15,0.44,0.97
+,"Volume, mean abs. error (%)",a,0.002,0.002,0.002,0.002,0.002,0.002
