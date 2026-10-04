@@ -45,7 +45,7 @@ INPUTS = DATA / 'inputs'  # the prepared network, forcing, observation reaches, 
 RESULTS = DATA / 'results'  # the cells of the simulation matrix
 FIGURES = ROOT / 'figures'
 TABLES = ROOT / 'tables'
-MANUSCRIPT = ROOT / 'paper' / 'manuscript.md'
+MANUSCRIPT = ROOT / 'paper-claude' / 'manuscript.md'
 
 # the River Forecast System v3 hydrofabric and routing parameters, and the ERA5 runoff
 RFS_ROOT = Path.home() / 'data' / 'rfsv3'

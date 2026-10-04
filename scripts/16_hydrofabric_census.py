@@ -1,6 +1,7 @@
 """
 Census of reaches outside the window of non-negative Muskingum coefficients in the hydrofabrics of large-scale routing:
-TDX-Hydro as delineated, HydroRIVERS, and MERIT-Basins, and, in the tables only, TDX-Hydro as processed for RFS v3.
+TDX-Hydro as delineated, HydroRIVERS, MERIT-Basins, NHDPlus V2, and NHDPlus HR, and, in the tables only, TDX-Hydro as
+processed for RFS v3.
 Every reach of every hydrofabric is given a travel time by the RFS v3 velocity law (Eq. 17) from its length and Strahler
 order, and x = 0.2, so the census compares how each segmentation places reach lengths relative to the window,
 independently of each model's own parameters. The figures show the hydrofabrics as published, not routing networks
@@ -26,6 +27,11 @@ HYDROGRAPHY = config.ROOT / 'hydrography'
 HYDRORIVERS_FILE = HYDROGRAPHY / 'HydroRIVERS_v10.gdb' / 'HydroRIVERS_v10.gdb'
 MERIT_DIR = HYDROGRAPHY / 'merit-hydro-rivers' / 'MERIT-Hydro_v07_Basins_v01_bugfix1' / 'pfaf_level_01'
 MERIT_REGIONS = 9  # the Pfafstetter level 1 basins that together cover the globe
+NHDPLUS_V2_FILE = HYDROGRAPHY / 'NHDPlusV21_National_Seamless_Flattened_Lower48.gdb'
+NHDPLUS_V2_COASTLINE = 'Coastline'  # the NHDPlus V2 feature type of coastlines
+NHDPLUS_HR_FILE = HYDROGRAPHY / 'NHDPlus_H_National_Release_2_GDB.gdb'
+NHD_COASTLINE = 566  # the NHD feature type of coastlines, network flowlines that are not channels and have no order
+NHD_NO_DATA = -9998  # the value NHDPlus HR gives a missing attribute
 DT_CENSUS = (30, 60, 300, 600, 900, 1800, 3600, 7200, 10800)  # routing time steps, seconds
 QUANTILES = (0.01, 0.10, 0.50, 0.90, 0.99)  # of reach length and travel time
 K_WINDOWS = (300, 3600)  # the steps whose window of k the travel time figure shades
@@ -120,13 +126,65 @@ def load_merit_basins() -> pd.DataFrame:
     return network(reaches['lengthkm'].to_numpy(np.float64) * 1000, reaches['order'].to_numpy(), down)
 
 
+def load_nhdplus_v2() -> pd.DataFrame:
+    """Every network flowline of NHDPlus Version 2.1 (the conterminous United States) but the coastlines."""
+    columns = ['Hydroseq', 'DnHydroseq', 'TerminalFl', 'FTYPE', 'StreamOrde', 'LENGTHKM']
+    flowlines = pyogrio.read_dataframe(
+        NHDPLUS_V2_FILE, layer='NHDFlowline_Network', columns=columns, read_geometry=False,
+    )
+    coast = flowlines['FTYPE'].to_numpy() == NHDPLUS_V2_COASTLINE
+    reaches = flowlines[~coast]
+    if np.any(reaches['StreamOrde'].to_numpy() < 1):
+        raise ValueError('an NHDPlus V2 flowline that is not a coastline has no stream order')
+    # a flowline drains along the main path, to the flowline whose Hydroseq is its DnHydroseq, so a minor divergence
+    # begins with no inflowing flowline; DnHydroseq is 0 at the outlet of a network, and flowlines that drain to a
+    # coastline end there, as the terminal flag of each says
+    next_ids = reaches['DnHydroseq'].to_numpy()
+    to_coast = np.isin(next_ids, flowlines['Hydroseq'].to_numpy()[coast])
+    outlet = (next_ids == 0) | to_coast
+    if not np.array_equal(outlet, reaches['TerminalFl'].to_numpy() == 1):
+        raise ValueError('the outlets of NHDPlus V2 must be the flowlines its terminal flag marks')
+    print(f'NHDPlus V2: {coast.sum()} coastline flowlines left out, {to_coast.sum()} flowlines that drain to them kept '
+          f'as outlets')
+    down = downstream_rows(reaches['Hydroseq'].to_numpy(), next_ids, outlet)
+    return network(reaches['LENGTHKM'].to_numpy() * 1000, reaches['StreamOrde'].to_numpy(), down)
+
+
+def load_nhdplus_hr() -> pd.DataFrame:
+    """Every network flowline of NHDPlus High Resolution (national release 2) but the coastlines."""
+    columns = ['hydroseq', 'dnhydroseq', 'terminalpa', 'ftype', 'streamorde', 'lengthkm']
+    flowlines = pyogrio.read_dataframe(
+        NHDPLUS_HR_FILE, layer='NetworkNHDFlowline', columns=columns, read_geometry=False,
+    )
+    coast = flowlines['ftype'].to_numpy() == NHD_COASTLINE
+    reaches = flowlines[~coast]
+    if np.any(reaches['streamorde'].to_numpy() < 1):
+        raise ValueError('an NHDPlus HR flowline that is not a coastline has no stream order')
+    # a flowline drains along the main path, to the flowline whose hydroseq is its dnhydroseq, so a minor divergence
+    # begins with no inflowing flowline; dnhydroseq is 0 at the outlet of a network, missing or -9998 at a few outlets,
+    # and flowlines that drain to a coastline end there
+    missing = reaches['dnhydroseq'].isna().to_numpy() | (reaches['dnhydroseq'].to_numpy() == NHD_NO_DATA)
+    if np.any(reaches['terminalpa'].to_numpy()[missing] != reaches['hydroseq'].to_numpy()[missing]):
+        raise ValueError('an NHDPlus HR flowline with no dnhydroseq is not the outlet of its network')
+    next_ids = np.where(missing, 0, reaches['dnhydroseq'].to_numpy())
+    to_coast = np.isin(next_ids, flowlines['hydroseq'].to_numpy()[coast])
+    print(f'NHDPlus HR: {coast.sum()} coastline flowlines left out, {to_coast.sum()} flowlines that drain to them and '
+          f'{missing.sum()} with no dnhydroseq kept as outlets')
+    outlet = (next_ids == 0) | to_coast
+    down = downstream_rows(reaches['hydroseq'].to_numpy(), next_ids, outlet)
+    return network(reaches['lengthkm'].to_numpy() * 1000, reaches['streamorde'].to_numpy(), down)
+
+
 HYDROFABRICS: dict[str, Callable[[], pd.DataFrame]] = {
     'TDX-Hydro': load_tdxhydro,
     'RFS v3': load_rfs_v3,
     'HydroRIVERS': load_hydrorivers,
     'MERIT-Basins': load_merit_basins,
+    'NHDPlus V2': load_nhdplus_v2,
+    'NHDPlus HR': load_nhdplus_hr,
 }
-FIGURE_HYDROFABRICS = ('TDX-Hydro', 'HydroRIVERS', 'MERIT-Basins')  # the hydrofabrics as published
+# the hydrofabrics as published
+FIGURE_HYDROFABRICS = ('TDX-Hydro', 'HydroRIVERS', 'MERIT-Basins', 'NHDPlus V2', 'NHDPlus HR')
 
 
 def sign_table(name: str, k: np.ndarray) -> pd.DataFrame:
@@ -206,10 +264,12 @@ def plot_signs(signs: pd.DataFrame) -> None:
         for name, rows in signs.groupby('hydrofabric', sort=False):
             if not np.array_equal(rows['dt_s'].to_numpy(), DT_CENSUS):
                 raise ValueError(f'{name} must have one row per census step, in order')
+            # unclipped, so the markers at 0 and 100% show whole
             axis.plot(steps, rows[column], marker=plotting.HYDROFABRIC_MARKERS[name], markersize=5,
-                      color=plotting.HYDROFABRIC_COLORS[name], label=name)
+                      color=plotting.HYDROFABRIC_COLORS[name], label=name, clip_on=False)
         plotting.step_ticks(axis, DT_CENSUS)
         axis.set_title(title)
+        axis.set_ylim(0, 100)
         axis.set_ylabel('Share of reaches (%)')
     key.axis('off')
     key.legend(*axes[0].get_legend_handles_labels(), loc='center')
@@ -222,8 +282,8 @@ def plot_distributions(curves: dict[str, np.ndarray]) -> None:
     if not curves:
         raise ValueError('no hydrofabrics')
     figure, axis = plt.subplots(figsize=(plotting.WIDTH, 4.0))
-    share = np.linspace(0, 1, next(iter(curves.values())).shape[0])
-    marked = np.searchsorted(share, (0.1, 0.3, 0.5, 0.7, 0.9))  # where each curve carries its marker
+    share = np.linspace(0, 100, next(iter(curves.values())).shape[0])  # percent
+    marked = np.searchsorted(share, (10, 30, 50, 70, 90))  # where each curve carries its marker
     for name, k in curves.items():
         if k.shape != share.shape:
             raise ValueError('every curve must be sampled at the same shares')
@@ -232,11 +292,12 @@ def plot_distributions(curves: dict[str, np.ndarray]) -> None:
     for dt in K_WINDOWS:
         low, high = dt / (2 * (1 - census.X)), dt / (2 * census.X)
         axis.axvspan(low, high, color=plotting.GRID, zorder=0, linewidth=0)
-        axis.text(np.sqrt(low * high), 0.97, plotting.step_label(dt), ha='center', va='top', color=plotting.MUTED)
+        axis.text(np.sqrt(low * high), 75, plotting.step_label(dt), ha='center', va='center', color=plotting.MUTED)
     axis.set_xscale('log')
     axis.set_xlim(10, 1e6)
+    axis.set_ylim(0, 100)
     axis.set_xlabel('k by Eq. 17 (s)')
-    axis.set_ylabel('Cumulative share of reaches')
+    axis.set_ylabel('Cumulative share of reaches (%)')
     axis.legend(loc='lower right')
     v = float(census.velocity(np.array([2]))[0])  # the celerity of a second-order reach, at which L = v k
     length = axis.secondary_xaxis('top', functions=(lambda k: v * k / 1000, lambda km: 1000 * km / v))

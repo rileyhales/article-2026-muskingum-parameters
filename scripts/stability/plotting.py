@@ -57,9 +57,12 @@ HYDROFABRIC_COLORS = {
     'TDX-Hydro': '#2a78d6',
     'HydroRIVERS': '#1baf7a',
     'MERIT-Basins': '#eda100',
+    # slots 6 and 7; slot 2, orange, fails the normal-vision floor against MERIT-Basins
+    'NHDPlus V2': '#008300',
+    'NHDPlus HR': '#4a3aa7',
 }
 # and one marker, so a hydrofabric is never told by color alone
-HYDROFABRIC_MARKERS = {'TDX-Hydro': 'o', 'HydroRIVERS': '^', 'MERIT-Basins': 'D'}
+HYDROFABRIC_MARKERS = {'TDX-Hydro': 'o', 'HydroRIVERS': '^', 'MERIT-Basins': 'D', 'NHDPlus V2': 'v', 'NHDPlus HR': 's'}
 DT_RAMP = ('#86b6ef', '#3987e5', '#1c5cab', '#0d366b')  # light to dark, for up to four time steps
 
 

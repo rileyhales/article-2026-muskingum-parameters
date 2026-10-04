@@ -4,7 +4,7 @@ manuscript: one from the ERA5 period of the matrix (annual peaks of every reach)
 every reach). Each cell gives the bias and the mean absolute value of a measure against the reference.
 
 Reads tables/synthetic_summary.csv and tables/era5_annual_summary.csv (scripts 08 and 10), replaces the tables between
-the treatment_effects markers in paper/manuscript.md, and writes
+the treatment_effects markers in paper-claude/manuscript.md, and writes
 tables/treatment_effects_<scenario>.csv. Cells not yet run are marked with an ellipsis. At 30 s no reach is
 too short, so the short-reach treatments are the standard network and the stabilized network is the substeps network;
 those cells are marked a rather than run. The stabilized network at 1 min, which differs from the substeps network

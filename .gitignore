@@ -1,5 +1,7 @@
 data/
 hydrography/
-/paper/build/
+/out/
+/paper/output/
+/paper-claude/build/
 figures/*.pdf
 vendor/

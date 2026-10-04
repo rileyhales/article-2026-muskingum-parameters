@@ -1,0 +1,172 @@
+% LaTeX copy of draft.md. Build from this folder with
+%   latexmk -pdf -outdir=build draft.tex
+% which writes build/draft.pdf and keeps the auxiliary files out of this folder.
+
+\documentclass[preprint,12pt,authoryear]{elsarticle}
+
+\usepackage{amsmath}
+\usepackage[margin=1in]{geometry}
+\usepackage{setspace}
+\usepackage[colorlinks=true, allcolors=blue]{hyperref}
+
+\setstretch{1.5}
+
+\journal{Environmental Modeling and Software}
+
+\begin{document}
+
+    \begin{frontmatter}
+
+        \title{Muskingum Routing Implementation and Parameterization for Large Domain Hydrology Models}
+
+        \author[a]{Riley Hales\corref{cor1}}
+        \cortext[cor1]{Corresponding author}
+        \affiliation[a]{organization={Brigham Young University}, city={Provo, Utah}, country={United States of America}}
+
+        \begin{highlights}
+            \item
+        \end{highlights}
+
+        \begin{abstract}
+
+        \end{abstract}
+
+        \begin{keyword}
+        \end{keyword}
+
+        \newpageafter{author}
+    \end{frontmatter}
+    \clearpage
+
+
+    \section{Introduction}
+    \label{sec:introduction}
+
+    Many hydrology models currently exist which simulate river routing, using physical equations, in an operational context, and covering continental
+    or larger domains. There are many valid methods for creating a modeling system matching these characteristics. The focus of this paper will be on
+    those characterized by using 1) a vector streams and catchments hydrography product base, 2) joined to a land surface model providing time
+    series runoff,and 3) applying river routing using an implementation of the Muskingum equation. Examples and citations are explored in the
+    remainder of this section. Alternative modeling methods include LISFLOOD \citep{vanderknijff2010} which uses kinematic wave routing on grids
+    rather than vectors and is operational on large domains models; namely the European Flood Awareness System \citep{smith2016,matthews2025}
+    and the Global Flood Awareness System \citep{alfieri2013, harrigan2020, prudhomme2024}.
+
+    Three examples of large scale models fitting the described pattern include the United States National Water Model (NWM), the GRADES-hydroDL (
+    Global Reach-scale A priori Discharge Estimates for SWOT) model, and the GEOGLOWS River Forecast System (RFS). The NWM's streams stem from the
+    NHDPlus High Resolution dataset, runoff from a WRF-Hydro model \citep{gochis2020, read2023, cosgrove2024} using the t-route \citep{troute_code}
+    Fortran implementation. GRADES uses the MERIT Hydro reaches \citep{lin2019, yamazaki2019} coupled to a hydroDL \citep{yang2025} model and
+    routed using the RAPID (Routing Application for Parallel Computation of Discharge) Fortran implementation \citep{david2011}. RFS is based on a
+    derivative of the TDX-Hydro streams \citep{carlson2024}, runoff from ECMWF reanalysis \citep{hersbach2020} and ensemble forecasts and ensemble
+    forecast products, with the river-route Python implementation \citep{river_route_code}. The river-route code is a new implementation developed
+    for the analysis presented in this paper.
+
+    Many articles provide the mathematical basis of the Muskingum method. Muskingum parameterizes each river with $k$, the travel time of a flood
+    wave in seconds, and $x$, a dimensionless number between 0.0 and 0.5 which determines attenuation \citep{mccarthy1938, chow1988}. The
+    Muskingum-Cunge publication \citep{cunge1969} describes estimating $k$ and $x$ from the river's physical and topographic characteristics using
+    Manning's equation. \citet{ponce1978} presented the first basis for making $k$ and $x$ dynamic, being recalculated at each time step during
+    the simulation, rather than statically assigned which represented base conditions and not necessarily the flood condition. The Muskingum equation
+    is given in Equation~\ref{eq:muskingum} \citep{usace_hms} where $Q$ and $I$ are channel flows in cubic meters per second at the indicated time
+    step and river reach. The coefficients are given in Equations~\ref{eq:c1},~\ref{eq:c2}, and~\ref{eq:c3}. The Muskingum equation's three
+    coefficients, $c_1$, $c_2$, and $c_3$, are functions of the Muskingum parameters $k$ and $x$, and the time step $\Delta t$. The Muskingum
+    equation is stable, meaning that errors are not generated or amplified by the equation, for any $x$ between 0.0 and 0.5 \citep{mccarthy1938}.
+    Valid values of $k$ and $\Delta t$ are positive numbers.
+
+    \begin{equation}
+        Q_{t+1} = c_1\, I_{t+1} + c_2\, I_t + c_3\, Q_t
+        \label{eq:muskingum}
+    \end{equation}
+
+    \begin{equation}
+        c_1 = \frac{\Delta t / k - 2x}{\Delta t / k + 2 (1-x)}
+        \label{eq:c1}
+    \end{equation}
+
+    \begin{equation}
+        c_2 = \frac{\Delta t / k + 2x}{\Delta t / k + 2 (1-x)}
+        \label{eq:c2}
+    \end{equation}
+
+    \begin{equation}
+        c_3 = \frac{2 (1-x) - \Delta t / k}{\Delta t / k + 2 (1-x)}
+        \label{eq:c3}
+    \end{equation}
+
+    Various code implementations of these ideas adapt these concepts in different ways based on the model's needs and the data available. For
+    instance, it's common to use regression or generalized relationships to substitute for stage and discharge gauges
+    \citep{leopold1953, blackburnlynch2017, heldmyer2022}, bathymetry surveys \citep{andreadis2013, mersel2013, neal2021}, and high resolution
+    cross-sections \citep{bieger2015, zheng2018, read2023} when estimating the Muskingum parameters. An attractive quality of Muskingum for large
+    domain models is the lower computation complexity time and its lower dependence on high resolution cross-sections and bathymetry estimations.
+    However, Muskingum only produces physically valid results when the coefficients are positive \citep{hjelmfelt1985, chow1988, gill1992}. These
+    conditions are summarized in Equation~\ref{eq:validity-conditions}. The three coefficients share a common denominator which is positive for all
+    valid values of $k$, $x$, and $\Delta t$. The numerator of $C2$ is always positive for valid parameter values reducing the validity condition to
+    values which produce positive numerators of $C1$ and $C3$. The validity condition is summarized in Equation~\ref{eq:validity-conditions}. When
+    $x$is at the maximum of 0.5, meaning no attenuation, $\Delta t$ and $k$ must be set equal. When $x$ is at the minimum of 0.0, meaning maximum
+    attenuation, $\Delta t$ must be less than $2k$.
+
+    \begin{gather}
+        c1: \Delta t > 2 k x \notag \\
+        c3: \Delta t < 2 k (1-x) \notag \\
+        2 k x < \Delta t < 2 k (1-x)
+        \label{eq:validity-conditions}
+    \end{gather}
+
+    The conditions for a stable and valid Muskingum simulation are not enforced by all code implementations; a problem made worse when using modern
+    vector hydrography products which often prioritize having higher stream segment density. In the hydrology routing case, higher density of segments
+    more readily facilitates violating the validity conditions rather than automatically increasing potential accuracy. The significance of
+    errors introduced in such cases is poorly understood and not documented in the literature.
+
+    The primary purpose of this paper is to assess and resolve inaccuracies introduced by under configured or misconfigured Muskingum routing
+    simulations. This paper is not concerned with model accuracy overall which would cover forcing quality and biases or calibrating a model.
+    The analysis first explores a few continental or global level hydrography products and their potential to violate routing validity conditions.
+    Next it covers strategies to mitigate those issues. It explores which are used in a few existing routing code implementations and the
+    consequences of those decisions. A new code package, river-route, implements the controls and mitigation strategies and is used to simulate a
+    watershed under various configurations with and without the mitigation strategies. The results are compared to provide insight on the significance
+    of the errors. The analysis also factors in the computational efficiency of the strategies which is a significant issue for large domain models
+    where practical storage, time, and hardware requirements are often significant limiters on the modeling choices made. The paper concludes with
+    recommendations for future work and best practices for large domain hydrology models using Muskingum routing.
+
+
+    \section{Methods}
+    \label{sec:methods}
+
+    \subsection{Analysis of Muskingum Parameters}
+    \label{subsec:analysis-of-muskingum-parameters}
+
+% todo: paragraph about stability and validity relating to the Courant number, 3 coefficients dt, k, x, and dx
+
+    \subsection{Analysis of Existing Routing Code Implementations}
+    \label{subsec:analysis-of-routing-code}
+
+    \subsection{Analysis of Global Hydrography Products}
+    \label{subsec:analysis-of-hydrography-products}
+
+    \subsection{Mitigation Strategies}
+    \label{subsec:mitigation-strategies}
+
+    \subsection{Efficient Computational Implementations}
+    \label{subsec:efficient-computational-implementations}
+
+
+    \section{Results}
+    \label{sec:results}
+
+    \subsection{Analysis of Hydrography Products}
+    \label{subsec:results-analysis-muskingum-parameters}
+
+    \subsection{Significance of Errors Introduced by Invalid Muskingum Parameters}
+    \label{subsec:results-significance-of-errors}
+
+    \subsection{Efficiency of Mitigation Strategies}
+    \label{subsec:results-efficiency-of-mitigation-strategies}
+
+
+    \section{Discussion}
+    \label{sec:discussion}
+
+
+    \section{Conclusions}
+    \label{sec:conclusions}
+
+    \bibliographystyle{elsarticle-harv}
+    \bibliography{references}
+
+\end{document}
