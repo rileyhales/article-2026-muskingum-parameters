@@ -24,8 +24,8 @@ DT = 3600
 CLASS_COLORS = {'too long': '#eb6834', 'valid': '#2a78d6', 'too short': '#4a3aa7'}
 STREAM_GRAY = '#b9b8b3'
 # label offsets in points from the middle of each main stem, chosen so no two names collide
-LABEL_OFFSETS = {'Okanogan': (-46, 2), 'Kettle': (5, -9), 'Kootenay': (6, -2), 'Upper Columbia': (6, 0),
-                 'Willamette': (-40, -12)}
+LABEL_OFFSETS = {'Okanogan': (-72, 4), 'Kettle': (5, -12), 'Kootenay': (6, -2), 'Upper Columbia': (6, 0),
+                 'Willamette': (-70, -14), 'Cowlitz': (-60, 6), 'John Day': (4, 8), 'Deschutes': (-40, -18)}
 
 
 def load_streams(table: pd.DataFrame) -> gpd.GeoDataFrame:
@@ -60,7 +60,7 @@ def label_stems(axis: plt.Axes, table: pd.DataFrame, streams: gpd.GeoDataFrame) 
         lines.plot(ax=axis, color=plotting.TREATMENT_COLORS['standard'], linewidth=1.2, rasterized=True)
         middle = lines.geometry.iloc[len(stem) // 2].interpolate(0.5, normalized=True)
         if name != 'Columbia':
-            axis.annotate(name, (middle.x, middle.y), fontsize=6, color=plotting.INK,
+            axis.annotate(name, (middle.x, middle.y), color=plotting.INK,
                           xytext=LABEL_OFFSETS.get(name, (4, 3)), textcoords='offset points',
                           path_effects=[patheffects.withStroke(linewidth=2, foreground=plotting.SURFACE)])
     return
@@ -71,27 +71,26 @@ if __name__ == '__main__':
     columbia = hydrofabric.load()
     lines = load_streams(columbia)
     observed = pd.read_parquet(config.INPUTS / 'observation_rivers.parquet')
-    figure, (basin, signs) = plt.subplots(1, 2, figsize=(7.2, 5.0), layout='constrained')
+    figure, (basin, signs) = plt.subplots(2, 1, figsize=(plotting.WIDTH, 8.5))
     draw_streams(basin, lines, STREAM_GRAY)
     label_stems(basin, columbia, lines)
     points = gpd.GeoSeries(gpd.points_from_xy(observed['lon'], observed['lat']), crs='EPSG:4326').to_crs(CRS)
     basin.scatter(points.x, points.y, s=0.8, color=plotting.INK, zorder=4, rasterized=True)
-    basin.set_title('(a) Study main stems and observation reaches', fontsize=9)
+    basin.set_title('(a) Study main stems and observation reaches')
     basin.legend(handles=[Line2D([], [], color=plotting.TREATMENT_COLORS['standard'], label='Main stem'),
                           Line2D([], [], color=plotting.INK, marker='o', markersize=2, linestyle='',
-                                 label='Observation reach')], loc='upper center', bbox_to_anchor=(0.5, 0.0),
-                 ncol=2, fontsize=7)
+                                 label='Observation reach')], loc='lower left', bbox_to_anchor=(1.0, 0.0))
     for name in ('too long', 'valid'):
         draw_streams(signs, lines[lines['class'] == name], CLASS_COLORS[name])
     short = lines[lines['class'] == 'too short'].geometry.interpolate(0.5, normalized=True)
     signs.scatter(short.x, short.y, s=0.8, color=CLASS_COLORS['too short'], zorder=4, rasterized=True)
     counts = lines['class'].value_counts()
     signs.legend(handles=[
-        Line2D([], [], color=CLASS_COLORS['too long'], label=f'c₁ < 0, too long ({counts["too long"]:,})'),
+        Line2D([], [], color=CLASS_COLORS['too long'], label=f'c₁ < 0 ({counts["too long"]:,})'),
         Line2D([], [], color=CLASS_COLORS['valid'], label=f'All ≥ 0 ({counts["valid"]:,})'),
         Line2D([], [], color=CLASS_COLORS['too short'], marker='o', markersize=2, linestyle='',
-               label=f'c₃ < 0, too short ({counts["too short"]:,})'),
-    ], loc='upper center', bbox_to_anchor=(0.5, 0.0), ncol=1, fontsize=7)
-    signs.set_title('(b) Sign of the coefficients at Δt = 1 h', fontsize=9)
+               label=f'c₃ < 0 ({counts["too short"]:,})'),
+    ], loc='lower left', bbox_to_anchor=(1.0, 0.0))
+    signs.set_title('(b) Sign of the coefficients at Δt = 1 h')
     plotting.save(figure, 'study_area')
     print(counts.to_string())

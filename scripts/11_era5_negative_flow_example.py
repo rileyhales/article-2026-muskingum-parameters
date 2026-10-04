@@ -97,7 +97,7 @@ if __name__ == '__main__':
     lowest = int(np.argmin(standard))
     shown = slice(max(lowest - SHOWN_HOURS // 2, 0), lowest + SHOWN_HOURS // 2)
     hours = (dates[shown] - dates[shown][0]) / np.timedelta64(1, 'h')
-    figure, axis = plt.subplots(figsize=(7.2, 3.0))
+    figure, axis = plt.subplots(figsize=(plotting.WIDTH, 4.0))
     for (treatment, _), (_, values) in routed.items():
         on_top = treatment == 'reference'
         axis.plot(hours, values[shown], color=plotting.TREATMENT_COLORS[treatment], linewidth=1.2,
@@ -106,10 +106,10 @@ if __name__ == '__main__':
     axis.axhline(0, color=plotting.MUTED, linewidth=0.6)
     _, _, c3, c4 = (float(c) for c in theory.coefficients(DT / worst['k_s'], 0.2))
     axis.set_title(f'Reach {river}: L = {worst["length_m"]:.0f} m, k = {worst["k_s"]:.0f} s, c3 = {c3:.2f}, '
-                   f'c4 = {c4:.2f}', fontsize=9)
+                   f'c4 = {c4:.2f}')
     axis.set_xlabel(f'Hours from {str(dates[shown][0])[:13]}')
     axis.set_ylabel('Discharge (m³/s)')
-    axis.legend(loc='upper right', fontsize=7)
+    axis.legend(loc='upper right')
     plotting.save(figure, 'era5_negative_flow_example')
     summary = {f'{t}_{dt}': {'min': float(v.min()), 'max': float(v.max()), 'negative_hours': int((v < 0).sum())}
                for (t, dt), (_, v) in routed.items()}

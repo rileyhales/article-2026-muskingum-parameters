@@ -87,7 +87,7 @@ local function caption_figure(figure, inlines)
   figure.identifier = 'fig:' .. number
   figure.content = figure.content:walk({
     Image = function(image)
-      image.attributes.width = '100%'
+      image.attributes.width = nil -- at its own size, bounded by the wide width in the template
       if flat_figures then
         return flatten_image(image)
       end
@@ -97,32 +97,80 @@ local function caption_figure(figure, inlines)
   return figure
 end
 
-local function size_columns(tbl)
-  -- give each column a share of the line width that grows with its longest cell, within limits that keep every column
-  -- readable; pandoc otherwise gives the columns of a wide pipe table equal shares
-  local longest = {}
+local LONG_CELL = 36 -- characters; a longer cell wraps, and counts as this long when the columns share the width
+local WIDE_TABLE = 90 -- characters of columns beyond which a table takes the wide width
+local SHORT_CELL = 12 -- characters; a body cell this short, a number or a label, is set on one line
+local WRAP_SHARE = 0.15 -- how much of the width a column could wrap into it receives, beyond its longest word
+
+local CAPITAL_WIDTH = 1.4 -- the width of a capital letter in characters of average width
+
+local function word_width(text)
+  -- the width of a word in characters of average width, counting capitals wider
+  local capitals = select(2, text:gsub('%u', ''))
+  return (utf8.len(text) or #text) + (CAPITAL_WIDTH - 1) * capitals
+end
+
+local function longest_word(blocks)
+  -- the width of the longest word of a cell, the narrowest it can be set; inline code breaks anywhere and is skipped
+  local width = 0
+  blocks:walk({
+    Str = function(word)
+      width = math.max(width, word_width(word.text))
+    end,
+  })
+  return width
+end
+
+local function column_lengths(tbl)
+  -- for each column the length of its longest cell, at most LONG_CELL, and the width it cannot wrap below: its longest
+  -- word, or its longest short body cell; and whether any cell is longer than LONG_CELL
+  local longest, words, wraps = {}, {}, false
   for i = 1, #tbl.colspecs do
     longest[i] = 9 -- room for a header word such as Treatment
+    words[i] = 2
   end
-  local function measure(rows)
+  local function measure(rows, is_body)
     for _, row in ipairs(rows) do
       for i, cell in ipairs(row.cells) do
+        local text = pandoc.utils.stringify(cell.contents)
+        local length = utf8.len(text) or 4
+        wraps = wraps or length > LONG_CELL
         if longest[i] then
-          longest[i] = math.max(longest[i], math.min(utf8.len(pandoc.utils.stringify(cell.contents)) or 4, 36))
+          local unbreakable = (is_body and length <= SHORT_CELL) and word_width(text) or longest_word(cell.contents)
+          longest[i] = math.max(longest[i], math.min(length, LONG_CELL))
+          words[i] = math.min(math.max(words[i], unbreakable), LONG_CELL)
         end
       end
     end
   end
-  measure(tbl.head.rows)
+  measure(tbl.head.rows, false)
   for _, body in ipairs(tbl.bodies) do
-    measure(body.body)
+    measure(body.body, true)
   end
+  return longest, wraps, words
+end
+
+local function is_wide(tbl)
+  -- a table whose cells would wrap at the text width: one with a long cell, or whose columns need many characters
+  local longest, wraps = column_lengths(tbl)
   local total = 0
   for i = 1, #longest do
     total = total + longest[i]
   end
+  return wraps or total > WIDE_TABLE
+end
+
+local function size_columns(tbl)
+  -- give each column a share of the line width, pandoc otherwise giving the columns of a wide pipe table equal shares:
+  -- room for what cannot wrap, its longest word or short body cell, and a little of the room its cells wrap into
+  local longest, _, words = column_lengths(tbl)
+  local shares, total = {}, 0
+  for i = 1, #longest do
+    shares[i] = words[i] + WRAP_SHARE * math.max(longest[i] - words[i], 0)
+    total = total + shares[i]
+  end
   for i, spec in ipairs(tbl.colspecs) do
-    tbl.colspecs[i] = { spec[1], longest[i] / total }
+    tbl.colspecs[i] = { spec[1], shares[i] / total }
   end
   return tbl
 end
@@ -199,9 +247,15 @@ local function next_table(blocks, i)
 end
 
 local function sized_table(tbl)
-  -- a table set a size smaller than the text, or two sizes smaller when it has eight columns or more
+  -- a table set a size smaller than the text, or two sizes smaller when it has eight columns or more; a wide table
+  -- takes the wide width of the template, centered on the text block, with its caption as wide
   local size = #tbl.colspecs >= 8 and '\\footnotesize' or '\\small'
-  return { pandoc.RawBlock('latex', '\\begingroup' .. size), tbl, pandoc.RawBlock('latex', '\\endgroup') }
+  local width = ''
+  if is_wide(tbl) then
+    width = '\\setlength{\\LTleft}{\\dimexpr(\\linewidth-\\widewidth)/2\\relax}\\setlength{\\LTright}{\\LTleft}'
+      .. '\\setlength{\\LTcapwidth}{\\widewidth}\\setlength{\\linewidth}{\\widewidth}\\setlength{\\tabcolsep}{4pt}'
+  end
+  return { pandoc.RawBlock('latex', '\\begingroup' .. size .. width), tbl, pandoc.RawBlock('latex', '\\endgroup') }
 end
 
 local function caption_floats(blocks)

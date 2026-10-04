@@ -1,2 +1,5 @@
 data/
+hydrography/
 /paper/build/
+figures/*.pdf
+vendor/

@@ -27,14 +27,15 @@ author:
 keywords:
   - Muskingum routing
   - Courant number
-  - numerical positivity
+  - numerical stability
   - river network
   - hydrofabric
   - TDX-Hydro
+  - National Water Model
 
 highlights:
   - Nearly half of TDX-Hydro reaches have a negative Muskingum coefficient at 1 h
-  - Reaches too short for the time step carry negative discharge under real forcing
-  - One downstream reach damps a short reach's error about fifteen-fold
-  - Substeps that keep x remove diffusion and raise peaks by up to 41% of the rise
-  - Subcycles and diffusion-preserving substeps restore positivity at any time step
+  - Muskingum discharge is a level; reporting it as a mean shifts timing half a step
+  - RAPID, WRF-Hydro, and t-route never check the signs of their coefficients
+  - The NWM's lagged upstream inflow makes each reach a faster linear reservoir
+  - Subcycles and x-adjusted substeps make every coefficient non-negative at any step

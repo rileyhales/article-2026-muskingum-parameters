@@ -1,4 +1,4 @@
-# Muskingum coefficient positivity experiments
+# Negative Muskingum coefficients in large hydrofabrics
 
 Experiments and manuscript draft on negative Muskingum coefficients in large hydrofabrics: how many reaches of the
 GEOGLOWS River Forecast System v3 (TDX-Hydro) hydrofabric have them at routing time steps from 30 s to 60 min, what
@@ -11,8 +11,11 @@ from the fork in `../river-route`, on the Columbia River basin.
 |---|---|
 | `paper/` | the manuscript and its LaTeX build (see `paper/README.md`) |
 | `scripts/` | the Python that prepares the inputs, runs the simulations, and makes the figures and tables; `scripts/stability/` is the package they share |
+| `hydrography/` | the hydrofabrics of the census as distributed: HydroRIVERS v1.0 and MERIT-Basins (MERIT Hydro v0.7, Basins v1, bugfix 1) |
 | `data/inputs/` | the prepared Columbia network, ERA5 catchment runoff, observation reaches, and event windows |
 | `data/results/` | the simulation matrix, one folder per cell |
+| `data/river-route-changes/` | the comparison of river-route before and after this study (step 17), one folder per version |
+| `vendor/river-route-matrix/` | the river-route that routed the matrix, copied unchanged (not tracked) |
 | `data/logs/` | the printed output of runs and analyses |
 | `data/verify_engine/` | the river-route Router outputs that `verify_engine.py` compares against |
 | `figures/` | the figures, as PNG and PDF |
@@ -26,10 +29,22 @@ Every script runs from the project folder with the river-route environment, whic
 ../river-route/.venv/bin/python scripts/<script>.py
 ```
 
-The fork of river-route carries one uncommitted, temporary change for this study: negative discharge is written as
-routed instead of clamped to zero (`router/static_muskingum.py`, `router/dynamic_muskingum.py`, and the stability warning
-in `network/Network.py`). The clamp only ever touched written discharge; the routed states and the series passed
-downstream were always unclamped.
+Two versions of river-route are used. The simulation matrix (steps 4 to 15) was routed with the fork at commit 0ac029a
+carrying one change: negative discharge written as routed instead of clamped to zero. That code is copied, unchanged,
+into `vendor/river-route-matrix` (not tracked; `COMMIT` and `uncommitted.diff` record its source), and a script runs
+with it when that folder is on `PYTHONPATH`:
+
+```bash
+PYTHONPATH=vendor/river-route-matrix ../river-route/.venv/bin/python scripts/<script>.py
+```
+
+`../river-route` itself now carries the changes this study found it needs (uncommitted): reaches too long for the step
+divided into the fewest substeps with x adjusted by Eq. 16, discharge reported as the trapezoidal mean of the
+computed discharges (Eq. 9), negative discharge written as routed, and networks with a reach of zero length, an x above 1/2, or a reach
+draining into itself refused. Step 17 compares the two versions. `scripts/verify_engine.py` checks the harness against
+`rr.Router` under either version, and under the matrix version also checks the matrix's stabilized treatment. After
+editing a river-route kernel, delete its numba cache (`river_route/**/*.nbi`, `*.nbc`): `route_job` inlines the routing
+methods, but its cache is keyed only on `router/_numba_kernels.py`.
 
 ## Pipeline
 
@@ -51,6 +66,8 @@ downstream were always unclamped.
 | 13 | `scripts/13_study_area_map.py` | Map of the study main stems, observation reaches, and coefficient signs at 1 h |
 | 14 | `scripts/14_treatment_tables.py` | Tables of every treatment and step against peak, peak time, and volume; refreshes the manuscript |
 | 15 | `scripts/15_restrict_era5_period.py` | Cuts finished 2000–2019 ERA5 cells to 2002–2011; `--check` measures the shorter spin-up |
+| 16 | `scripts/16_hydrofabric_census.py` | Census of every reach of TDX-Hydro as delineated (~/data/TDXHydroGeoParquet), RFS v3, the Columbia, HydroRIVERS, and MERIT-Basins, with k from Eq. 17 and x = 0.2, and the census figures |
+| 17 | `scripts/17_river_route_changes.py` | river-route before and after this study, each against its own reference: reporting convention (standard network), its stabilized network, and the substep count with x adjusted, under the burst, the square wave, and ERA5 2002–2011, in `data/river-route-changes/<before or after>/` |
 
 Every run times itself as it goes (`scripts/stability/engine.py`, `Timer`): `meta.json` records the seconds spent preparing forcing,
 routing with river-route's kernels, and recording outputs, the routing seconds of every chunk with its simulated hours,

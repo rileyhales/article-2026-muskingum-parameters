@@ -114,271 +114,282 @@ ty)) (/usr/local/texlive/2026/texmf-dist/tex/generic/stringenc/stringenc.sty)
 (/usr/local/texlive/2026/texmf-dist/tex/latex/amsfonts/umsb.fd)
 (/usr/local/texlive/2026/texmf-dist/tex/latex/microtype/mt-msb.cfg) [1]
 [1] [2]
-Underfull \hbox (badness 1371) in paragraph at lines 155--180
-\TU/STIXTwoText(0)/m/n/12 for the NextGen framework collapses inter-confluence 
-flowpaths shorter
-[3] [4] [5] [6] [7] [8] [9] [10] [11]
-Overfull \hbox (3.77959pt too wide) in paragraph at lines 577--578
+Overfull \hbox (0.15463pt too wide) in paragraph at lines 179--184
+[]\TU/STIXTwoText(0)/m/n/12 to explain why these errors become prevalent in lar
+ge-scale models, by es-
+[3] [4] [5] [6] [7] [8] [9] [10] [11] [12] [13] [14] [15] [16]
+Overfull \hbox (3.77959pt too wide) in paragraph at lines 832--833
 []\TU/STIXTwoText(0)/m/n/10.95 Treatment  
 
-Overfull \hbox (12.78561pt too wide) in paragraph at lines 579--580
+Overfull \hbox (12.78561pt too wide) in paragraph at lines 834--835
 []\TU/STIXTwoText(0)/m/n/10.95 Applies 
 
-Overfull \hbox (3.77959pt too wide) in paragraph at lines 595--596
+Overfull \hbox (3.77959pt too wide) in paragraph at lines 850--851
 []\TU/STIXTwoText(0)/m/n/10.95 Treatment  
 
-Overfull \hbox (12.78561pt too wide) in paragraph at lines 597--598
+Overfull \hbox (12.78561pt too wide) in paragraph at lines 852--853
 []\TU/STIXTwoText(0)/m/n/10.95 Applies 
 
-Overfull \hbox (0.81215pt too wide) in paragraph at lines 618--618
+Overfull \hbox (0.81215pt too wide) in paragraph at lines 873--873
 []|\TU/STIXTwoText(0)/m/n/10.95 Subcycles|  
-
-Underfull \hbox (badness 5578) in paragraph at lines 645--659
+[17]
+Underfull \hbox (badness 5578) in paragraph at lines 918--932
 []\TU/STIXTwoText(0)/m/n/12 TDX-Hydro is a global hydrography derived by the U.
 S. National
-
-Underfull \hbox (badness 1226) in paragraph at lines 645--659
-\TU/STIXTwoText(0)/m/n/12 dissolution of first-order headwaters into their seco
-nd-order receivers so
-[12] [13]
-Overfull \hbox (1.53008pt too wide) in paragraph at lines 719--720
+[18] [19]
+Underfull \hbox (badness 1097) in paragraph at lines 1021--1029
+\TU/STIXTwoText(0)/m/n/12 Sub-reaches are routed in series within the reach, an
+d the reach’s
+[20]
+Overfull \hbox (1.53008pt too wide) in paragraph at lines 1114--1115
 []\TU/STIXTwoText(0)/m/n/10 Reaches  
 
-Overfull \hbox (1.53008pt too wide) in paragraph at lines 739--740
+Overfull \hbox (1.53008pt too wide) in paragraph at lines 1134--1135
 []\TU/STIXTwoText(0)/m/n/10 Reaches  
-[14] [15] [16] [17] [18] [19] [20] [21]
-Underfull \hbox (badness 2846) in paragraph at lines 1152--1176
-[]\TU/STIXTwoText(0)/b/n/12 Reaches too short. \TU/STIXTwoText(0)/m/n/12 Networ
-k-wide, the three treatments of short
+[21] [22] [23] [24] [25] [26]
+Overfull \hbox (2.20244pt too wide) in paragraph at lines 1401--1402
+[]\TU/STIXTwoText(0)/m/n/10 Reaches  
 
-Underfull \hbox (badness 2142) in paragraph at lines 1152--1176
-\TU/STIXTwoText(0)/m/n/12 reaches are indistinguishable from the standard netwo
-rk (Fig. 8), be-
+Overfull \hbox (2.20244pt too wide) in paragraph at lines 1421--1422
+[]\TU/STIXTwoText(0)/m/n/10 Reaches  
 
-Underfull \hbox (badness 1609) in paragraph at lines 1152--1176
-\TU/STIXTwoText(0)/m/n/12 cause short reaches are few and, as Section 5.3 shows
-, their influence
+Overfull \hbox (7.05244pt too wide) in paragraph at lines 1441--1441
+[]|\TU/STIXTwoText(0)/m/n/10 8,477,883|  
 
-Underfull \hbox (badness 1748) in paragraph at lines 1152--1176
-\TU/STIXTwoText(0)/m/n/12 stays local. On the short reaches themselves the diff
-erences are large
-[22] [23] [24] [25] [26]
-Overfull \hbox (1.68378pt too wide) in paragraph at lines 1340--1340
+Overfull \hbox (11.79993pt too wide) in paragraph at lines 1445--1445
+[]|\TU/STIXTwoText(0)/m/n/10 GEOGLOWS|  
+
+Overfull \hbox (7.05244pt too wide) in paragraph at lines 1445--1445
+[]|\TU/STIXTwoText(0)/m/n/10 4,899,534|  
+ [27] [28] [29]
+Underfull \hbox (badness 1028) in paragraph at lines 1578--1585
+\TU/STIXTwoText(0)/m/n/12 network due to short segments causing computational i
+ssues” (T9). Its
+[30]
+Underfull \hbox (badness 1789) in paragraph at lines 1606--1606
+[]\TU/STIXTwoText(0)/m/n/10.95 Table 5: Findings in the source code of RAPID (c
+ommit
+ [31] [32] [33] [34] [35] [36] [37] [38] [39]
+Overfull \hbox (1.68378pt too wide) in paragraph at lines 2002--2002
 []|\TU/STIXTwoText(0)/m/n/10 −0.03|  
 
-Overfull \hbox (1.68378pt too wide) in paragraph at lines 1340--1340
+Overfull \hbox (1.68378pt too wide) in paragraph at lines 2002--2002
 []|\TU/STIXTwoText(0)/m/n/10 −0.08|  
 
-Overfull \hbox (1.68378pt too wide) in paragraph at lines 1340--1340
+Overfull \hbox (1.68378pt too wide) in paragraph at lines 2002--2002
 []|\TU/STIXTwoText(0)/m/n/10 −0.13|  
 
-Overfull \hbox (1.68378pt too wide) in paragraph at lines 1340--1340
+Overfull \hbox (1.68378pt too wide) in paragraph at lines 2002--2002
 []|\TU/STIXTwoText(0)/m/n/10 −0.35|  
 
-Overfull \hbox (1.68378pt too wide) in paragraph at lines 1341--1342
+Overfull \hbox (1.68378pt too wide) in paragraph at lines 2003--2004
 []|\TU/STIXTwoText(0)/m/n/10 −0.70|  
 
-Overfull \hbox (1.68378pt too wide) in paragraph at lines 1346--1346
+Overfull \hbox (1.68378pt too wide) in paragraph at lines 2008--2008
 []|\TU/STIXTwoText(0)/m/n/10 +41.1|  
 
-Overfull \hbox (1.68378pt too wide) in paragraph at lines 1346--1346
+Overfull \hbox (1.68378pt too wide) in paragraph at lines 2008--2008
 []|\TU/STIXTwoText(0)/m/n/10 +38.6|  
 
-Overfull \hbox (1.68378pt too wide) in paragraph at lines 1346--1346
+Overfull \hbox (1.68378pt too wide) in paragraph at lines 2008--2008
 []|\TU/STIXTwoText(0)/m/n/10 +28.1|  
 
-Overfull \hbox (1.68378pt too wide) in paragraph at lines 1346--1346
+Overfull \hbox (1.68378pt too wide) in paragraph at lines 2008--2008
 []|\TU/STIXTwoText(0)/m/n/10 +21.8|  
 
-Overfull \hbox (1.68378pt too wide) in paragraph at lines 1347--1347
+Overfull \hbox (1.68378pt too wide) in paragraph at lines 2009--2009
 []|\TU/STIXTwoText(0)/m/n/10 +17.7|  
 
-Overfull \hbox (1.68378pt too wide) in paragraph at lines 1347--1347
+Overfull \hbox (1.68378pt too wide) in paragraph at lines 2009--2009
 []|\TU/STIXTwoText(0)/m/n/10 +10.5|  
 
-Overfull \hbox (1.68378pt too wide) in paragraph at lines 1350--1350
+Overfull \hbox (1.68378pt too wide) in paragraph at lines 2012--2012
 []|\TU/STIXTwoText(0)/m/n/10 +1.50|  
 
-Overfull \hbox (1.68378pt too wide) in paragraph at lines 1350--1350
+Overfull \hbox (1.68378pt too wide) in paragraph at lines 2012--2012
 []|\TU/STIXTwoText(0)/m/n/10 +1.49|  
 
-Overfull \hbox (1.68378pt too wide) in paragraph at lines 1350--1350
+Overfull \hbox (1.68378pt too wide) in paragraph at lines 2012--2012
 []|\TU/STIXTwoText(0)/m/n/10 +1.21|  
 
-Overfull \hbox (1.68378pt too wide) in paragraph at lines 1350--1350
+Overfull \hbox (1.68378pt too wide) in paragraph at lines 2012--2012
 []|\TU/STIXTwoText(0)/m/n/10 +0.86|  
 
-Overfull \hbox (1.68378pt too wide) in paragraph at lines 1350--1350
+Overfull \hbox (1.68378pt too wide) in paragraph at lines 2012--2012
 []|\TU/STIXTwoText(0)/m/n/10 +0.79|  
 
-Overfull \hbox (1.68378pt too wide) in paragraph at lines 1350--1350
+Overfull \hbox (1.68378pt too wide) in paragraph at lines 2012--2012
 []|\TU/STIXTwoText(0)/m/n/10 +0.59|  
 
-Overfull \hbox (1.68378pt too wide) in paragraph at lines 1351--1352
+Overfull \hbox (1.68378pt too wide) in paragraph at lines 2013--2014
 []|\TU/STIXTwoText(0)/m/n/10 −0.15|  
 
-Overfull \hbox (1.68378pt too wide) in paragraph at lines 1360--1360
+Overfull \hbox (1.68378pt too wide) in paragraph at lines 2022--2022
 []|\TU/STIXTwoText(0)/m/n/10 +0.17|  
 
-Overfull \hbox (1.68378pt too wide) in paragraph at lines 1360--1360
+Overfull \hbox (1.68378pt too wide) in paragraph at lines 2022--2022
 []|\TU/STIXTwoText(0)/m/n/10 +0.17|  
 
-Overfull \hbox (1.68378pt too wide) in paragraph at lines 1360--1360
+Overfull \hbox (1.68378pt too wide) in paragraph at lines 2022--2022
 []|\TU/STIXTwoText(0)/m/n/10 +0.15|  
 
-Overfull \hbox (1.68378pt too wide) in paragraph at lines 1360--1360
+Overfull \hbox (1.68378pt too wide) in paragraph at lines 2022--2022
 []|\TU/STIXTwoText(0)/m/n/10 +0.11|  
 
-Overfull \hbox (1.68378pt too wide) in paragraph at lines 1360--1360
+Overfull \hbox (1.68378pt too wide) in paragraph at lines 2022--2022
 []|\TU/STIXTwoText(0)/m/n/10 +0.08|  
 
-Overfull \hbox (1.68378pt too wide) in paragraph at lines 1360--1360
+Overfull \hbox (1.68378pt too wide) in paragraph at lines 2022--2022
 []|\TU/STIXTwoText(0)/m/n/10 −0.10|  
 
-Overfull \hbox (1.68378pt too wide) in paragraph at lines 1361--1362
+Overfull \hbox (1.68378pt too wide) in paragraph at lines 2023--2024
 []|\TU/STIXTwoText(0)/m/n/10 −0.60|  
 
-Overfull \hbox (1.68378pt too wide) in paragraph at lines 1370--1370
+Overfull \hbox (1.68378pt too wide) in paragraph at lines 2032--2032
 []|\TU/STIXTwoText(0)/m/n/10 −0.03|  
 
-Overfull \hbox (1.68378pt too wide) in paragraph at lines 1370--1370
+Overfull \hbox (1.68378pt too wide) in paragraph at lines 2032--2032
 []|\TU/STIXTwoText(0)/m/n/10 −0.08|  
 
-Overfull \hbox (1.68378pt too wide) in paragraph at lines 1370--1370
+Overfull \hbox (1.68378pt too wide) in paragraph at lines 2032--2032
 []|\TU/STIXTwoText(0)/m/n/10 −0.13|  
 
-Overfull \hbox (1.68378pt too wide) in paragraph at lines 1370--1370
+Overfull \hbox (1.68378pt too wide) in paragraph at lines 2032--2032
 []|\TU/STIXTwoText(0)/m/n/10 −0.34|  
 
-Overfull \hbox (1.68378pt too wide) in paragraph at lines 1371--1372
+Overfull \hbox (1.68378pt too wide) in paragraph at lines 2033--2034
 []|\TU/STIXTwoText(0)/m/n/10 −0.69|  
 
-Overfull \hbox (1.68378pt too wide) in paragraph at lines 1376--1376
+Overfull \hbox (1.68378pt too wide) in paragraph at lines 2038--2038
 []|\TU/STIXTwoText(0)/m/n/10 +41.1|  
 
-Overfull \hbox (1.68378pt too wide) in paragraph at lines 1376--1376
+Overfull \hbox (1.68378pt too wide) in paragraph at lines 2038--2038
 []|\TU/STIXTwoText(0)/m/n/10 +38.6|  
 
-Overfull \hbox (1.68378pt too wide) in paragraph at lines 1376--1376
+Overfull \hbox (1.68378pt too wide) in paragraph at lines 2038--2038
 []|\TU/STIXTwoText(0)/m/n/10 +28.1|  
 
-Overfull \hbox (1.68378pt too wide) in paragraph at lines 1376--1376
+Overfull \hbox (1.68378pt too wide) in paragraph at lines 2038--2038
 []|\TU/STIXTwoText(0)/m/n/10 +21.8|  
 
-Overfull \hbox (1.68378pt too wide) in paragraph at lines 1377--1377
+Overfull \hbox (1.68378pt too wide) in paragraph at lines 2039--2039
 []|\TU/STIXTwoText(0)/m/n/10 +17.7|  
 
-Overfull \hbox (1.68378pt too wide) in paragraph at lines 1377--1377
+Overfull \hbox (1.68378pt too wide) in paragraph at lines 2039--2039
 []|\TU/STIXTwoText(0)/m/n/10 +10.5|  
 
-Overfull \hbox (1.68378pt too wide) in paragraph at lines 1380--1380
+Overfull \hbox (1.68378pt too wide) in paragraph at lines 2042--2042
 []|\TU/STIXTwoText(0)/m/n/10 +1.50|  
 
-Overfull \hbox (1.68378pt too wide) in paragraph at lines 1380--1380
+Overfull \hbox (1.68378pt too wide) in paragraph at lines 2042--2042
 []|\TU/STIXTwoText(0)/m/n/10 +1.49|  
 
-Overfull \hbox (1.68378pt too wide) in paragraph at lines 1380--1380
+Overfull \hbox (1.68378pt too wide) in paragraph at lines 2042--2042
 []|\TU/STIXTwoText(0)/m/n/10 +1.21|  
 
-Overfull \hbox (1.68378pt too wide) in paragraph at lines 1380--1380
+Overfull \hbox (1.68378pt too wide) in paragraph at lines 2042--2042
 []|\TU/STIXTwoText(0)/m/n/10 +0.86|  
 
-Overfull \hbox (1.68378pt too wide) in paragraph at lines 1380--1380
+Overfull \hbox (1.68378pt too wide) in paragraph at lines 2042--2042
 []|\TU/STIXTwoText(0)/m/n/10 +0.79|  
 
-Overfull \hbox (1.68378pt too wide) in paragraph at lines 1380--1380
+Overfull \hbox (1.68378pt too wide) in paragraph at lines 2042--2042
 []|\TU/STIXTwoText(0)/m/n/10 +0.59|  
 
-Overfull \hbox (1.68378pt too wide) in paragraph at lines 1381--1382
+Overfull \hbox (1.68378pt too wide) in paragraph at lines 2043--2044
 []|\TU/STIXTwoText(0)/m/n/10 −0.13|  
 
-Overfull \hbox (1.68378pt too wide) in paragraph at lines 1390--1390
+Overfull \hbox (1.68378pt too wide) in paragraph at lines 2052--2052
 []|\TU/STIXTwoText(0)/m/n/10 −0.03|  
 
-Overfull \hbox (1.68378pt too wide) in paragraph at lines 1390--1390
+Overfull \hbox (1.68378pt too wide) in paragraph at lines 2052--2052
 []|\TU/STIXTwoText(0)/m/n/10 −0.07|  
 
-Overfull \hbox (1.68378pt too wide) in paragraph at lines 1390--1390
+Overfull \hbox (1.68378pt too wide) in paragraph at lines 2052--2052
 []|\TU/STIXTwoText(0)/m/n/10 −0.12|  
 
-Overfull \hbox (1.68378pt too wide) in paragraph at lines 1390--1390
+Overfull \hbox (1.68378pt too wide) in paragraph at lines 2052--2052
 []|\TU/STIXTwoText(0)/m/n/10 −0.30|  
 
-Overfull \hbox (1.68378pt too wide) in paragraph at lines 1391--1392
+Overfull \hbox (1.68378pt too wide) in paragraph at lines 2053--2054
 []|\TU/STIXTwoText(0)/m/n/10 −0.50|  
 
-Overfull \hbox (1.68378pt too wide) in paragraph at lines 1400--1400
+Overfull \hbox (1.68378pt too wide) in paragraph at lines 2062--2062
 []|\TU/STIXTwoText(0)/m/n/10 −0.03|  
 
-Overfull \hbox (1.68378pt too wide) in paragraph at lines 1400--1400
+Overfull \hbox (1.68378pt too wide) in paragraph at lines 2062--2062
 []|\TU/STIXTwoText(0)/m/n/10 −0.08|  
 
-Overfull \hbox (1.68378pt too wide) in paragraph at lines 1400--1400
+Overfull \hbox (1.68378pt too wide) in paragraph at lines 2062--2062
 []|\TU/STIXTwoText(0)/m/n/10 −0.14|  
 
-Overfull \hbox (1.68378pt too wide) in paragraph at lines 1400--1400
+Overfull \hbox (1.68378pt too wide) in paragraph at lines 2062--2062
 []|\TU/STIXTwoText(0)/m/n/10 −0.39|  
 
-Overfull \hbox (1.68378pt too wide) in paragraph at lines 1401--1402
+Overfull \hbox (1.68378pt too wide) in paragraph at lines 2063--2064
 []|\TU/STIXTwoText(0)/m/n/10 −0.91|  
- [27] [28]
-Overfull \hbox (1.89014pt too wide) in paragraph at lines 1480--1480
+ [40] [41]
+Overfull \hbox (1.89014pt too wide) in paragraph at lines 2143--2143
 []|\TU/STIXTwoText(0)/m/n/10 +0.04|  
 
-Overfull \hbox (1.89014pt too wide) in paragraph at lines 1480--1481
+Overfull \hbox (1.89014pt too wide) in paragraph at lines 2143--2144
 []|\TU/STIXTwoText(0)/m/n/10 +0.46|  
 
-Overfull \hbox (1.89014pt too wide) in paragraph at lines 1483--1483
+Overfull \hbox (1.89014pt too wide) in paragraph at lines 2146--2146
 []|\TU/STIXTwoText(0)/m/n/10 −0.04|  
 
-Overfull \hbox (1.89014pt too wide) in paragraph at lines 1483--1483
+Overfull \hbox (1.89014pt too wide) in paragraph at lines 2146--2146
 []|\TU/STIXTwoText(0)/m/n/10 −0.08|  
 
-Overfull \hbox (1.89014pt too wide) in paragraph at lines 1483--1483
+Overfull \hbox (1.89014pt too wide) in paragraph at lines 2146--2146
 []|\TU/STIXTwoText(0)/m/n/10 −0.12|  
 
-Overfull \hbox (1.89014pt too wide) in paragraph at lines 1483--1483
+Overfull \hbox (1.89014pt too wide) in paragraph at lines 2146--2146
 []|\TU/STIXTwoText(0)/m/n/10 −0.24|  
 
-Overfull \hbox (1.89014pt too wide) in paragraph at lines 1484--1485
+Overfull \hbox (1.89014pt too wide) in paragraph at lines 2147--2148
 []|\TU/STIXTwoText(0)/m/n/10 −0.45|  
 
-Overfull \hbox (6.84013pt too wide) in paragraph at lines 1489--1489
+Overfull \hbox (6.84013pt too wide) in paragraph at lines 2152--2152
 []|\TU/STIXTwoText(0)/m/n/10 +14.98|  
 
-Overfull \hbox (6.84013pt too wide) in paragraph at lines 1490--1490
+Overfull \hbox (6.84013pt too wide) in paragraph at lines 2153--2153
 []|\TU/STIXTwoText(0)/m/n/10 +11.11|  
 
-Overfull \hbox (1.89014pt too wide) in paragraph at lines 1490--1490
+Overfull \hbox (1.89014pt too wide) in paragraph at lines 2153--2153
 []|\TU/STIXTwoText(0)/m/n/10 +7.06|  
 
-Overfull \hbox (1.89014pt too wide) in paragraph at lines 1493--1493
+Overfull \hbox (1.89014pt too wide) in paragraph at lines 2156--2156
 []|\TU/STIXTwoText(0)/m/n/10 +0.38|  
 
-Overfull \hbox (1.89014pt too wide) in paragraph at lines 1493--1493
+Overfull \hbox (1.89014pt too wide) in paragraph at lines 2156--2156
 []|\TU/STIXTwoText(0)/m/n/10 +0.23|  
 
-Overfull \hbox (1.89014pt too wide) in paragraph at lines 1494--1494
+Overfull \hbox (1.89014pt too wide) in paragraph at lines 2157--2157
 []|\TU/STIXTwoText(0)/m/n/10 +0.01|  
- [29] [30] [31] [32] [33] [34] [35] [36]
-Underfull \hbox (badness 1132) in paragraph at lines 1823--1832
-[]\TU/STIXTwoText(0)/b/n/12 Substeps with $[]$ held\TU/STIXTwoText(0)/m/n/12 , 
-river-route’s stabilized network, should be
-
-Underfull \hbox (badness 1062) in paragraph at lines 1832--1840
+ [42] [43] [44] [45] [46] [47] [48] [49] [50] [51]
+Underfull \hbox (badness 1062) in paragraph at lines 2626--2634
 []\TU/STIXTwoText(0)/b/n/12 Diffusion-preserving substeps \TU/STIXTwoText(0)/m/
 n/12 remove the dip while keeping the
-[37] [38] [39] (./manuscript.bbl [40] [41]
-Underfull \hbox (badness 2142) in paragraph at lines 199--206
+[52] [53] [54]
+Underfull \hbox (badness 1466) in paragraph at lines 2779--2791
+\TU/STIXTwoText(0)/m/n/12 study compares every simulation with a time-converged
+ solution of the
+[55]
+Underfull \hbox (badness 2582) in paragraph at lines 2837--2841
+[]\TU/STIXTwoText(0)/m/n/12 Assess the numerical handling of a configuration ag
+ainst a time-
+[56] [57] [58] (./manuscript.bbl [59] [60] [61]
+Underfull \hbox (badness 2142) in paragraph at lines 277--284
 []\TU/STIXTwoText(0)/m/n/12 Szél, S., Gáspár, C., 2000.  On the negative weight
 ing factors in the
-[42]) [43] (./manuscript.aux)
+[62]) [63] (./manuscript.aux)
 
 LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
 
  )
 (see the transcript file for additional information)
-Output written on manuscript.xdv (44 pages, 943312 bytes).
+Output written on manuscript.xdv (64 pages, 1516520 bytes).
 Transcript written on manuscript.log.
 Latexmk: Getting log file 'manuscript.log'
 Latexmk: Examining 'manuscript.fls'
@@ -502,267 +513,278 @@ ty)) (/usr/local/texlive/2026/texmf-dist/tex/generic/stringenc/stringenc.sty)
 (/usr/local/texlive/2026/texmf-dist/tex/latex/amsfonts/umsb.fd)
 (/usr/local/texlive/2026/texmf-dist/tex/latex/microtype/mt-msb.cfg) [1]
 [1] [2]
-Underfull \hbox (badness 1371) in paragraph at lines 155--180
-\TU/STIXTwoText(0)/m/n/12 for the NextGen framework collapses inter-confluence 
-flowpaths shorter
-[3] [4] [5] [6] [7] [8] [9] [10] [11]
-Overfull \hbox (3.77959pt too wide) in paragraph at lines 577--578
+Overfull \hbox (0.15463pt too wide) in paragraph at lines 179--184
+[]\TU/STIXTwoText(0)/m/n/12 to explain why these errors become prevalent in lar
+ge-scale models, by es-
+[3] [4] [5] [6] [7] [8] [9] [10] [11] [12] [13] [14] [15] [16]
+Overfull \hbox (3.77959pt too wide) in paragraph at lines 832--833
 []\TU/STIXTwoText(0)/m/n/10.95 Treatment  
 
-Overfull \hbox (12.78561pt too wide) in paragraph at lines 579--580
+Overfull \hbox (12.78561pt too wide) in paragraph at lines 834--835
 []\TU/STIXTwoText(0)/m/n/10.95 Applies 
 
-Overfull \hbox (3.77959pt too wide) in paragraph at lines 595--596
+Overfull \hbox (3.77959pt too wide) in paragraph at lines 850--851
 []\TU/STIXTwoText(0)/m/n/10.95 Treatment  
 
-Overfull \hbox (12.78561pt too wide) in paragraph at lines 597--598
+Overfull \hbox (12.78561pt too wide) in paragraph at lines 852--853
 []\TU/STIXTwoText(0)/m/n/10.95 Applies 
 
-Overfull \hbox (0.81215pt too wide) in paragraph at lines 618--618
+Overfull \hbox (0.81215pt too wide) in paragraph at lines 873--873
 []|\TU/STIXTwoText(0)/m/n/10.95 Subcycles|  
-
-Underfull \hbox (badness 5578) in paragraph at lines 645--659
+[17]
+Underfull \hbox (badness 5578) in paragraph at lines 918--932
 []\TU/STIXTwoText(0)/m/n/12 TDX-Hydro is a global hydrography derived by the U.
 S. National
-
-Underfull \hbox (badness 1226) in paragraph at lines 645--659
-\TU/STIXTwoText(0)/m/n/12 dissolution of first-order headwaters into their seco
-nd-order receivers so
-[12] [13]
-Overfull \hbox (1.53008pt too wide) in paragraph at lines 719--720
+[18] [19]
+Underfull \hbox (badness 1097) in paragraph at lines 1021--1029
+\TU/STIXTwoText(0)/m/n/12 Sub-reaches are routed in series within the reach, an
+d the reach’s
+[20]
+Overfull \hbox (1.53008pt too wide) in paragraph at lines 1114--1115
 []\TU/STIXTwoText(0)/m/n/10 Reaches  
 
-Overfull \hbox (1.53008pt too wide) in paragraph at lines 739--740
+Overfull \hbox (1.53008pt too wide) in paragraph at lines 1134--1135
 []\TU/STIXTwoText(0)/m/n/10 Reaches  
-[14] [15] [16] [17] [18] [19] [20] [21]
-Underfull \hbox (badness 2846) in paragraph at lines 1152--1176
-[]\TU/STIXTwoText(0)/b/n/12 Reaches too short. \TU/STIXTwoText(0)/m/n/12 Networ
-k-wide, the three treatments of short
+[21] [22] [23] [24] [25] [26]
+Overfull \hbox (2.20244pt too wide) in paragraph at lines 1401--1402
+[]\TU/STIXTwoText(0)/m/n/10 Reaches  
 
-Underfull \hbox (badness 2142) in paragraph at lines 1152--1176
-\TU/STIXTwoText(0)/m/n/12 reaches are indistinguishable from the standard netwo
-rk (Fig. 8), be-
+Overfull \hbox (2.20244pt too wide) in paragraph at lines 1421--1422
+[]\TU/STIXTwoText(0)/m/n/10 Reaches  
 
-Underfull \hbox (badness 1609) in paragraph at lines 1152--1176
-\TU/STIXTwoText(0)/m/n/12 cause short reaches are few and, as Section 5.3 shows
-, their influence
+Overfull \hbox (7.05244pt too wide) in paragraph at lines 1441--1441
+[]|\TU/STIXTwoText(0)/m/n/10 8,477,883|  
 
-Underfull \hbox (badness 1748) in paragraph at lines 1152--1176
-\TU/STIXTwoText(0)/m/n/12 stays local. On the short reaches themselves the diff
-erences are large
-[22] [23] [24] [25] [26]
-Overfull \hbox (1.68378pt too wide) in paragraph at lines 1340--1340
+Overfull \hbox (11.79993pt too wide) in paragraph at lines 1445--1445
+[]|\TU/STIXTwoText(0)/m/n/10 GEOGLOWS|  
+
+Overfull \hbox (7.05244pt too wide) in paragraph at lines 1445--1445
+[]|\TU/STIXTwoText(0)/m/n/10 4,899,534|  
+ [27] [28] [29]
+Underfull \hbox (badness 1028) in paragraph at lines 1578--1585
+\TU/STIXTwoText(0)/m/n/12 network due to short segments causing computational i
+ssues” (T9). Its
+[30]
+Underfull \hbox (badness 1789) in paragraph at lines 1606--1606
+[]\TU/STIXTwoText(0)/m/n/10.95 Table 5: Findings in the source code of RAPID (c
+ommit
+ [31] [32] [33] [34] [35] [36] [37] [38] [39]
+Overfull \hbox (1.68378pt too wide) in paragraph at lines 2002--2002
 []|\TU/STIXTwoText(0)/m/n/10 −0.03|  
 
-Overfull \hbox (1.68378pt too wide) in paragraph at lines 1340--1340
+Overfull \hbox (1.68378pt too wide) in paragraph at lines 2002--2002
 []|\TU/STIXTwoText(0)/m/n/10 −0.08|  
 
-Overfull \hbox (1.68378pt too wide) in paragraph at lines 1340--1340
+Overfull \hbox (1.68378pt too wide) in paragraph at lines 2002--2002
 []|\TU/STIXTwoText(0)/m/n/10 −0.13|  
 
-Overfull \hbox (1.68378pt too wide) in paragraph at lines 1340--1340
+Overfull \hbox (1.68378pt too wide) in paragraph at lines 2002--2002
 []|\TU/STIXTwoText(0)/m/n/10 −0.35|  
 
-Overfull \hbox (1.68378pt too wide) in paragraph at lines 1341--1342
+Overfull \hbox (1.68378pt too wide) in paragraph at lines 2003--2004
 []|\TU/STIXTwoText(0)/m/n/10 −0.70|  
 
-Overfull \hbox (1.68378pt too wide) in paragraph at lines 1346--1346
+Overfull \hbox (1.68378pt too wide) in paragraph at lines 2008--2008
 []|\TU/STIXTwoText(0)/m/n/10 +41.1|  
 
-Overfull \hbox (1.68378pt too wide) in paragraph at lines 1346--1346
+Overfull \hbox (1.68378pt too wide) in paragraph at lines 2008--2008
 []|\TU/STIXTwoText(0)/m/n/10 +38.6|  
 
-Overfull \hbox (1.68378pt too wide) in paragraph at lines 1346--1346
+Overfull \hbox (1.68378pt too wide) in paragraph at lines 2008--2008
 []|\TU/STIXTwoText(0)/m/n/10 +28.1|  
 
-Overfull \hbox (1.68378pt too wide) in paragraph at lines 1346--1346
+Overfull \hbox (1.68378pt too wide) in paragraph at lines 2008--2008
 []|\TU/STIXTwoText(0)/m/n/10 +21.8|  
 
-Overfull \hbox (1.68378pt too wide) in paragraph at lines 1347--1347
+Overfull \hbox (1.68378pt too wide) in paragraph at lines 2009--2009
 []|\TU/STIXTwoText(0)/m/n/10 +17.7|  
 
-Overfull \hbox (1.68378pt too wide) in paragraph at lines 1347--1347
+Overfull \hbox (1.68378pt too wide) in paragraph at lines 2009--2009
 []|\TU/STIXTwoText(0)/m/n/10 +10.5|  
 
-Overfull \hbox (1.68378pt too wide) in paragraph at lines 1350--1350
+Overfull \hbox (1.68378pt too wide) in paragraph at lines 2012--2012
 []|\TU/STIXTwoText(0)/m/n/10 +1.50|  
 
-Overfull \hbox (1.68378pt too wide) in paragraph at lines 1350--1350
+Overfull \hbox (1.68378pt too wide) in paragraph at lines 2012--2012
 []|\TU/STIXTwoText(0)/m/n/10 +1.49|  
 
-Overfull \hbox (1.68378pt too wide) in paragraph at lines 1350--1350
+Overfull \hbox (1.68378pt too wide) in paragraph at lines 2012--2012
 []|\TU/STIXTwoText(0)/m/n/10 +1.21|  
 
-Overfull \hbox (1.68378pt too wide) in paragraph at lines 1350--1350
+Overfull \hbox (1.68378pt too wide) in paragraph at lines 2012--2012
 []|\TU/STIXTwoText(0)/m/n/10 +0.86|  
 
-Overfull \hbox (1.68378pt too wide) in paragraph at lines 1350--1350
+Overfull \hbox (1.68378pt too wide) in paragraph at lines 2012--2012
 []|\TU/STIXTwoText(0)/m/n/10 +0.79|  
 
-Overfull \hbox (1.68378pt too wide) in paragraph at lines 1350--1350
+Overfull \hbox (1.68378pt too wide) in paragraph at lines 2012--2012
 []|\TU/STIXTwoText(0)/m/n/10 +0.59|  
 
-Overfull \hbox (1.68378pt too wide) in paragraph at lines 1351--1352
+Overfull \hbox (1.68378pt too wide) in paragraph at lines 2013--2014
 []|\TU/STIXTwoText(0)/m/n/10 −0.15|  
 
-Overfull \hbox (1.68378pt too wide) in paragraph at lines 1360--1360
+Overfull \hbox (1.68378pt too wide) in paragraph at lines 2022--2022
 []|\TU/STIXTwoText(0)/m/n/10 +0.17|  
 
-Overfull \hbox (1.68378pt too wide) in paragraph at lines 1360--1360
+Overfull \hbox (1.68378pt too wide) in paragraph at lines 2022--2022
 []|\TU/STIXTwoText(0)/m/n/10 +0.17|  
 
-Overfull \hbox (1.68378pt too wide) in paragraph at lines 1360--1360
+Overfull \hbox (1.68378pt too wide) in paragraph at lines 2022--2022
 []|\TU/STIXTwoText(0)/m/n/10 +0.15|  
 
-Overfull \hbox (1.68378pt too wide) in paragraph at lines 1360--1360
+Overfull \hbox (1.68378pt too wide) in paragraph at lines 2022--2022
 []|\TU/STIXTwoText(0)/m/n/10 +0.11|  
 
-Overfull \hbox (1.68378pt too wide) in paragraph at lines 1360--1360
+Overfull \hbox (1.68378pt too wide) in paragraph at lines 2022--2022
 []|\TU/STIXTwoText(0)/m/n/10 +0.08|  
 
-Overfull \hbox (1.68378pt too wide) in paragraph at lines 1360--1360
+Overfull \hbox (1.68378pt too wide) in paragraph at lines 2022--2022
 []|\TU/STIXTwoText(0)/m/n/10 −0.10|  
 
-Overfull \hbox (1.68378pt too wide) in paragraph at lines 1361--1362
+Overfull \hbox (1.68378pt too wide) in paragraph at lines 2023--2024
 []|\TU/STIXTwoText(0)/m/n/10 −0.60|  
 
-Overfull \hbox (1.68378pt too wide) in paragraph at lines 1370--1370
+Overfull \hbox (1.68378pt too wide) in paragraph at lines 2032--2032
 []|\TU/STIXTwoText(0)/m/n/10 −0.03|  
 
-Overfull \hbox (1.68378pt too wide) in paragraph at lines 1370--1370
+Overfull \hbox (1.68378pt too wide) in paragraph at lines 2032--2032
 []|\TU/STIXTwoText(0)/m/n/10 −0.08|  
 
-Overfull \hbox (1.68378pt too wide) in paragraph at lines 1370--1370
+Overfull \hbox (1.68378pt too wide) in paragraph at lines 2032--2032
 []|\TU/STIXTwoText(0)/m/n/10 −0.13|  
 
-Overfull \hbox (1.68378pt too wide) in paragraph at lines 1370--1370
+Overfull \hbox (1.68378pt too wide) in paragraph at lines 2032--2032
 []|\TU/STIXTwoText(0)/m/n/10 −0.34|  
 
-Overfull \hbox (1.68378pt too wide) in paragraph at lines 1371--1372
+Overfull \hbox (1.68378pt too wide) in paragraph at lines 2033--2034
 []|\TU/STIXTwoText(0)/m/n/10 −0.69|  
 
-Overfull \hbox (1.68378pt too wide) in paragraph at lines 1376--1376
+Overfull \hbox (1.68378pt too wide) in paragraph at lines 2038--2038
 []|\TU/STIXTwoText(0)/m/n/10 +41.1|  
 
-Overfull \hbox (1.68378pt too wide) in paragraph at lines 1376--1376
+Overfull \hbox (1.68378pt too wide) in paragraph at lines 2038--2038
 []|\TU/STIXTwoText(0)/m/n/10 +38.6|  
 
-Overfull \hbox (1.68378pt too wide) in paragraph at lines 1376--1376
+Overfull \hbox (1.68378pt too wide) in paragraph at lines 2038--2038
 []|\TU/STIXTwoText(0)/m/n/10 +28.1|  
 
-Overfull \hbox (1.68378pt too wide) in paragraph at lines 1376--1376
+Overfull \hbox (1.68378pt too wide) in paragraph at lines 2038--2038
 []|\TU/STIXTwoText(0)/m/n/10 +21.8|  
 
-Overfull \hbox (1.68378pt too wide) in paragraph at lines 1377--1377
+Overfull \hbox (1.68378pt too wide) in paragraph at lines 2039--2039
 []|\TU/STIXTwoText(0)/m/n/10 +17.7|  
 
-Overfull \hbox (1.68378pt too wide) in paragraph at lines 1377--1377
+Overfull \hbox (1.68378pt too wide) in paragraph at lines 2039--2039
 []|\TU/STIXTwoText(0)/m/n/10 +10.5|  
 
-Overfull \hbox (1.68378pt too wide) in paragraph at lines 1380--1380
+Overfull \hbox (1.68378pt too wide) in paragraph at lines 2042--2042
 []|\TU/STIXTwoText(0)/m/n/10 +1.50|  
 
-Overfull \hbox (1.68378pt too wide) in paragraph at lines 1380--1380
+Overfull \hbox (1.68378pt too wide) in paragraph at lines 2042--2042
 []|\TU/STIXTwoText(0)/m/n/10 +1.49|  
 
-Overfull \hbox (1.68378pt too wide) in paragraph at lines 1380--1380
+Overfull \hbox (1.68378pt too wide) in paragraph at lines 2042--2042
 []|\TU/STIXTwoText(0)/m/n/10 +1.21|  
 
-Overfull \hbox (1.68378pt too wide) in paragraph at lines 1380--1380
+Overfull \hbox (1.68378pt too wide) in paragraph at lines 2042--2042
 []|\TU/STIXTwoText(0)/m/n/10 +0.86|  
 
-Overfull \hbox (1.68378pt too wide) in paragraph at lines 1380--1380
+Overfull \hbox (1.68378pt too wide) in paragraph at lines 2042--2042
 []|\TU/STIXTwoText(0)/m/n/10 +0.79|  
 
-Overfull \hbox (1.68378pt too wide) in paragraph at lines 1380--1380
+Overfull \hbox (1.68378pt too wide) in paragraph at lines 2042--2042
 []|\TU/STIXTwoText(0)/m/n/10 +0.59|  
 
-Overfull \hbox (1.68378pt too wide) in paragraph at lines 1381--1382
+Overfull \hbox (1.68378pt too wide) in paragraph at lines 2043--2044
 []|\TU/STIXTwoText(0)/m/n/10 −0.13|  
 
-Overfull \hbox (1.68378pt too wide) in paragraph at lines 1390--1390
+Overfull \hbox (1.68378pt too wide) in paragraph at lines 2052--2052
 []|\TU/STIXTwoText(0)/m/n/10 −0.03|  
 
-Overfull \hbox (1.68378pt too wide) in paragraph at lines 1390--1390
+Overfull \hbox (1.68378pt too wide) in paragraph at lines 2052--2052
 []|\TU/STIXTwoText(0)/m/n/10 −0.07|  
 
-Overfull \hbox (1.68378pt too wide) in paragraph at lines 1390--1390
+Overfull \hbox (1.68378pt too wide) in paragraph at lines 2052--2052
 []|\TU/STIXTwoText(0)/m/n/10 −0.12|  
 
-Overfull \hbox (1.68378pt too wide) in paragraph at lines 1390--1390
+Overfull \hbox (1.68378pt too wide) in paragraph at lines 2052--2052
 []|\TU/STIXTwoText(0)/m/n/10 −0.30|  
 
-Overfull \hbox (1.68378pt too wide) in paragraph at lines 1391--1392
+Overfull \hbox (1.68378pt too wide) in paragraph at lines 2053--2054
 []|\TU/STIXTwoText(0)/m/n/10 −0.50|  
 
-Overfull \hbox (1.68378pt too wide) in paragraph at lines 1400--1400
+Overfull \hbox (1.68378pt too wide) in paragraph at lines 2062--2062
 []|\TU/STIXTwoText(0)/m/n/10 −0.03|  
 
-Overfull \hbox (1.68378pt too wide) in paragraph at lines 1400--1400
+Overfull \hbox (1.68378pt too wide) in paragraph at lines 2062--2062
 []|\TU/STIXTwoText(0)/m/n/10 −0.08|  
 
-Overfull \hbox (1.68378pt too wide) in paragraph at lines 1400--1400
+Overfull \hbox (1.68378pt too wide) in paragraph at lines 2062--2062
 []|\TU/STIXTwoText(0)/m/n/10 −0.14|  
 
-Overfull \hbox (1.68378pt too wide) in paragraph at lines 1400--1400
+Overfull \hbox (1.68378pt too wide) in paragraph at lines 2062--2062
 []|\TU/STIXTwoText(0)/m/n/10 −0.39|  
 
-Overfull \hbox (1.68378pt too wide) in paragraph at lines 1401--1402
+Overfull \hbox (1.68378pt too wide) in paragraph at lines 2063--2064
 []|\TU/STIXTwoText(0)/m/n/10 −0.91|  
- [27] [28]
-Overfull \hbox (1.89014pt too wide) in paragraph at lines 1480--1480
+ [40] [41]
+Overfull \hbox (1.89014pt too wide) in paragraph at lines 2143--2143
 []|\TU/STIXTwoText(0)/m/n/10 +0.04|  
 
-Overfull \hbox (1.89014pt too wide) in paragraph at lines 1480--1481
+Overfull \hbox (1.89014pt too wide) in paragraph at lines 2143--2144
 []|\TU/STIXTwoText(0)/m/n/10 +0.46|  
 
-Overfull \hbox (1.89014pt too wide) in paragraph at lines 1483--1483
+Overfull \hbox (1.89014pt too wide) in paragraph at lines 2146--2146
 []|\TU/STIXTwoText(0)/m/n/10 −0.04|  
 
-Overfull \hbox (1.89014pt too wide) in paragraph at lines 1483--1483
+Overfull \hbox (1.89014pt too wide) in paragraph at lines 2146--2146
 []|\TU/STIXTwoText(0)/m/n/10 −0.08|  
 
-Overfull \hbox (1.89014pt too wide) in paragraph at lines 1483--1483
+Overfull \hbox (1.89014pt too wide) in paragraph at lines 2146--2146
 []|\TU/STIXTwoText(0)/m/n/10 −0.12|  
 
-Overfull \hbox (1.89014pt too wide) in paragraph at lines 1483--1483
+Overfull \hbox (1.89014pt too wide) in paragraph at lines 2146--2146
 []|\TU/STIXTwoText(0)/m/n/10 −0.24|  
 
-Overfull \hbox (1.89014pt too wide) in paragraph at lines 1484--1485
+Overfull \hbox (1.89014pt too wide) in paragraph at lines 2147--2148
 []|\TU/STIXTwoText(0)/m/n/10 −0.45|  
 
-Overfull \hbox (6.84013pt too wide) in paragraph at lines 1489--1489
+Overfull \hbox (6.84013pt too wide) in paragraph at lines 2152--2152
 []|\TU/STIXTwoText(0)/m/n/10 +14.98|  
 
-Overfull \hbox (6.84013pt too wide) in paragraph at lines 1490--1490
+Overfull \hbox (6.84013pt too wide) in paragraph at lines 2153--2153
 []|\TU/STIXTwoText(0)/m/n/10 +11.11|  
 
-Overfull \hbox (1.89014pt too wide) in paragraph at lines 1490--1490
+Overfull \hbox (1.89014pt too wide) in paragraph at lines 2153--2153
 []|\TU/STIXTwoText(0)/m/n/10 +7.06|  
 
-Overfull \hbox (1.89014pt too wide) in paragraph at lines 1493--1493
+Overfull \hbox (1.89014pt too wide) in paragraph at lines 2156--2156
 []|\TU/STIXTwoText(0)/m/n/10 +0.38|  
 
-Overfull \hbox (1.89014pt too wide) in paragraph at lines 1493--1493
+Overfull \hbox (1.89014pt too wide) in paragraph at lines 2156--2156
 []|\TU/STIXTwoText(0)/m/n/10 +0.23|  
 
-Overfull \hbox (1.89014pt too wide) in paragraph at lines 1494--1494
+Overfull \hbox (1.89014pt too wide) in paragraph at lines 2157--2157
 []|\TU/STIXTwoText(0)/m/n/10 +0.01|  
- [29] [30] [31] [32] [33] [34] [35] [36]
-Underfull \hbox (badness 1132) in paragraph at lines 1823--1832
-[]\TU/STIXTwoText(0)/b/n/12 Substeps with $[]$ held\TU/STIXTwoText(0)/m/n/12 , 
-river-route’s stabilized network, should be
-
-Underfull \hbox (badness 1062) in paragraph at lines 1832--1840
+ [42] [43] [44] [45] [46] [47] [48] [49] [50] [51]
+Underfull \hbox (badness 1062) in paragraph at lines 2626--2634
 []\TU/STIXTwoText(0)/b/n/12 Diffusion-preserving substeps \TU/STIXTwoText(0)/m/
 n/12 remove the dip while keeping the
-[37] [38] [39] (./manuscript.bbl [40] [41]
-Underfull \hbox (badness 2142) in paragraph at lines 199--206
+[52] [53] [54]
+Underfull \hbox (badness 1466) in paragraph at lines 2779--2791
+\TU/STIXTwoText(0)/m/n/12 study compares every simulation with a time-converged
+ solution of the
+[55]
+Underfull \hbox (badness 2582) in paragraph at lines 2837--2841
+[]\TU/STIXTwoText(0)/m/n/12 Assess the numerical handling of a configuration ag
+ainst a time-
+[56] [57] [58] (./manuscript.bbl [59] [60] [61]
+Underfull \hbox (badness 2142) in paragraph at lines 277--284
 []\TU/STIXTwoText(0)/m/n/12 Szél, S., Gáspár, C., 2000.  On the negative weight
 ing factors in the
-[42]) [43] (./manuscript.aux) )
+[62]) [63] (./manuscript.aux) )
 (see the transcript file for additional information)
-Output written on manuscript.xdv (44 pages, 943312 bytes).
+Output written on manuscript.xdv (64 pages, 1516520 bytes).
 Transcript written on manuscript.log.
 Latexmk: Getting log file 'manuscript.log'
 Latexmk: Examining 'manuscript.fls'
@@ -789,7 +811,7 @@ Running 'xdvipdfmx -E -o "manuscript.pdf"  "manuscript.xdv"'
 manuscript.xdv -> manuscript.pdf
 [1][2
 xdvipdfmx:warning: Object @page.1 already defined.
-][3][4][5][6][7][8][9][10][11][12][13][14][15][16][17][18][19][20][21][22][23][24][25][26][27][28][29][30][31][32][33][34][35][36][37][38][39][40][41][42][43][44]
-1542278 bytes written
+][3][4][5][6][7][8][9][10][11][12][13][14][15][16][17][18][19][20][21][22][23][24][25][26][27][28][29][30][31][32][33][34][35][36][37][38][39][40][41][42][43][44][45][46][47][48][49][50][51][52][53][54][55][56][57][58][59][60][61][62][63][64]
+4097619 bytes written
 Latexmk: All targets (manuscript.xdv manuscript.pdf) are up-to-date
 

@@ -11,19 +11,34 @@ recorder rather than a writer. ``scripts/verify_engine.py`` checks that it repro
 import time
 from collections.abc import Iterable
 from concurrent.futures import ThreadPoolExecutor
+from pathlib import Path
 from typing import NamedTuple, Protocol
 
 import numpy as np
+import river_route
 from river_route.router import static_muskingum
 from river_route.router._numba_kernels import route_region
 from river_route.runoff import CatchmentRunoffVolumes
 
+from . import config
 from .treatments import Treated
 
-__all__ = ['Chunk', 'Recorder', 'Timer', 'route', 'steady_state', 'routed_reaches']
+__all__ = ['Chunk', 'Recorder', 'Timer', 'route', 'steady_state', 'routed_reaches', 'river_route_code']
 
 MAX_CHUNKS = 100_000  # far more than any run of the matrix holds
 HOURS_PER_YEAR = 8760
+
+
+def river_route_code() -> str:
+    """
+    Which river-route is imported: 'before', the code that routed the matrix, copied into vendor/river-route-matrix
+    and imported with that folder on PYTHONPATH, or 'after', ../river-route with the changes of this study.
+    """
+    location = Path(river_route.__file__).resolve()
+    found = [code for code, root in config.CODES.items() if root.resolve() in location.parents]
+    if len(found) != 1:
+        raise RuntimeError(f'river_route imported from {location}, which is neither version of config.CODES')
+    return found[0]
 
 
 class Chunk(NamedTuple):

@@ -16,8 +16,8 @@ __all__ = ['Cell', 'load_cell', 'align', 'peaks', 'nyquist_amplitude', 'dip_belo
 class Cell:
     """The outputs of one matrix cell: its meta, river ids, and the path of each array."""
 
-    def __init__(self, scenario: str, treatment: str, dt: int) -> None:
-        self.directory = config.run_dir(scenario, treatment, dt)
+    def __init__(self, scenario: str, treatment: str, dt: int, root: Path = config.RESULTS) -> None:
+        self.directory = config.run_dir(scenario, treatment, dt, root)
         if not (self.directory / 'meta.json').exists():
             raise FileNotFoundError(f'{self.directory} has not been run')
         self.meta = json.loads((self.directory / 'meta.json').read_text())
@@ -34,9 +34,9 @@ class Cell:
         return np.load(path, mmap_mode='r' if mmap else None)
 
 
-def load_cell(scenario: str, treatment: str, dt: int) -> Cell:
-    """The outputs of one cell of the matrix."""
-    return Cell(scenario, treatment, dt)
+def load_cell(scenario: str, treatment: str, dt: int, root: Path = config.RESULTS) -> Cell:
+    """The outputs of one cell of the matrix, or of the comparison under ``root``."""
+    return Cell(scenario, treatment, dt, root)
 
 
 def align(cell_ids: np.ndarray, reference_ids: np.ndarray) -> np.ndarray:

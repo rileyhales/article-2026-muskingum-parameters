@@ -106,7 +106,7 @@ def to_markdown(table: pd.DataFrame) -> str:
 def refresh_manuscript(manuscript: Path, name: str, markdown: str) -> bool:
     """Replace the table between the begin and end markers of ``name`` in the manuscript; False if it has none."""
     text = manuscript.read_text()
-    begin, end = f'<!-- begin treatment_effects_{name} -->', f'<!-- end treatment_effects_{name} -->'
+    begin, end = f'<!-- begin {name} -->', f'<!-- end {name} -->'
     if text.count(begin) != 1 or text.count(end) != 1:
         return False
     head, rest = text.split(begin)
@@ -119,5 +119,5 @@ if __name__ == '__main__':
     for name in MEASURES:
         effects = build(name)
         effects.to_csv(config.TABLES / f'treatment_effects_{name}.csv', index=False)
-        refreshed = refresh_manuscript(config.MANUSCRIPT, name, to_markdown(effects))
+        refreshed = refresh_manuscript(config.MANUSCRIPT, f'treatment_effects_{name}', to_markdown(effects))
         print(f'{name}: written to tables/' + (', refreshed in the manuscript' if refreshed else ''))

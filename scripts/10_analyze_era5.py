@@ -223,7 +223,7 @@ def cost_table(cells: list[tuple[str, int]]) -> pd.DataFrame:
 
 def plot_annual(summary: pd.DataFrame) -> None:
     """Annual peak error, peak timing, negative hours, and oscillation hours against dt, per treatment."""
-    figure, axes = plt.subplots(2, 2, figsize=(7.2, 6.0), sharex=True, layout='constrained')
+    figure, axes = plt.subplots(2, 2, figsize=(plotting.WIDTH, 7.0), sharex=True)
     steps = np.asarray(config.DT_ROUTING)
     panels = ((axes[0, 0], 'peak_error_abs_mean', 100, 'Mean |annual peak error| (%)'),
               (axes[0, 1], 'timing_moved_share', 100, 'Annual peaks whose hour\nmoved (%)'),
@@ -234,24 +234,23 @@ def plot_annual(summary: pd.DataFrame) -> None:
             data = summary[summary['treatment'] == treatment].sort_values('dt')
             if data.empty:
                 continue
-            axis.plot(data['dt'], scale * data[column], color=plotting.TREATMENT_COLORS[treatment], marker='o',
-                      markersize=3, label=plotting.TREATMENT_LABELS[treatment])
-        axis.set_xscale('log')
+            axis.plot(plotting.step_positions(data['dt'], steps), scale * data[column], marker='o', markersize=3,
+                      color=plotting.TREATMENT_COLORS[treatment], label=plotting.TREATMENT_LABELS[treatment])
         if column in ('excess_negative_hours', 'excess_oscillation_hours'):
             axis.set_yscale('symlog', linthresh=10)
         axis.set_ylabel(label)
     for axis in axes[1]:
-        axis.set_xticks(steps, [f'{s // 60}m' if s >= 60 else f'{s}s' for s in steps], rotation=45)
+        plotting.step_ticks(axis, steps)
         axis.set_xlabel('Routing time step')
     handles, labels = axes[0, 0].get_legend_handles_labels()
-    figure.legend(handles, labels, loc='outside lower center', ncol=4)
+    figure.legend(handles, labels, loc='upper center', bbox_to_anchor=(0.5, 0.0), ncol=2)
     plotting.save(figure, 'era5_annual_errors')
     return
 
 
 def plot_profiles(profiles: pd.DataFrame, stems: tuple[str, ...], cells: tuple[tuple[str, int], ...]) -> None:
     """Event peak error along main stems, distance above the mouth on x."""
-    figure, axes = plt.subplots(1, len(stems), figsize=(7.2, 3.4), sharey=True, layout='constrained')
+    figure, axes = plt.subplots(1, len(stems), figsize=(plotting.WIDTH, 4.0), sharey=True)
     for axis, stem in zip(np.atleast_1d(axes), stems, strict=True):
         for treatment, dt in cells:
             data = profiles[(profiles['stem'] == stem) & (profiles['treatment'] == treatment)
@@ -260,11 +259,11 @@ def plot_profiles(profiles: pd.DataFrame, stems: tuple[str, ...], cells: tuple[t
                       label=f'{plotting.TREATMENT_LABELS[treatment]}, {dt} s', marker='o', markersize=2)
         axis.axhline(0, color=plotting.MUTED, linewidth=0.6)
         axis.invert_xaxis()
-        axis.set_title(stem, fontsize=9)
-        axis.set_xlabel('km above the mouth')
+        axis.set_title(stem)
     np.atleast_1d(axes)[0].set_ylabel('Event peak error (%)')
+    np.atleast_1d(axes)[len(stems) // 2].set_xlabel('km above the mouth')
     handles, labels = np.atleast_1d(axes)[0].get_legend_handles_labels()
-    figure.legend(handles, labels, loc='outside lower center', ncol=3, fontsize=7)
+    figure.legend(handles, labels, loc='upper center', bbox_to_anchor=(0.5, 0.0), ncol=2)
     plotting.save(figure, 'era5_stem_profiles')
     return
 

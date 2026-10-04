@@ -27,12 +27,15 @@ __all__ = [
     'DT_ROUTING',
     'DT_RUNOFF',
     'TREATMENTS',
+    'CHANGE_TREATMENTS',
     'REFERENCE',
     'ERA5_YEARS',
     'ERA5_SPINUP',
     'ERA5_SCENARIO',
     'ERA5_FULL_SCENARIO',
     'ERA5_FULL_YEARS',
+    'CHANGES',
+    'CODES',
     'run_dir',
 ]
 
@@ -71,21 +74,33 @@ ERA5_FULL_YEARS = tuple(range(2000, 2020))
 # the treatments of rivers whose coefficients are negative at a time step
 TREATMENTS = {
     'standard': 'every river routed whole at the base time step, as delineated',
-    'substeps': 'rivers too long for dt split into equal sub-reaches in series, x unchanged (river-route)',
+    'substeps': 'rivers too long for dt split into ceil(2kx/dt) equal sub-reaches in series, x unchanged, as '
+    'river-route did before this study',
     'substeps-xadj': 'as substeps, with x of each sub-reach lowered so the cascade keeps the reach diffusion',
     'subcycles': 'rivers too short for dt routed in shorter steps of their own (river-route)',
-    'stabilized': 'substeps and subcycles together, river-route network_type stabilized',
+    'stabilized': 'substeps and subcycles together: river-route network_type stabilized before this study',
     'inflate-k': 'k of rivers too short for dt raised to the smallest k that keeps c3 non-negative',
     'merge': 'rivers too short for dt removed, their upstreams and runoff joined to the river downstream',
     'reference': 'dt 30 s with every river subcycled to a step of at most k/5: the time-converged solution',
 }
 REFERENCE = ('reference', 30)
+# the treatments of the comparison of river-route before and after the changes this study made to it
+# (scripts/17_river_route_changes.py), which are not cells of the matrix
+CHANGE_TREATMENTS = {
+    'substeps-fewest': 'rivers too long for dt split into the fewest equal sub-reaches whose coefficients are '
+    'non-negative with x lowered as in substeps-xadj: two at x = 0.2',
+    'river-route': "river-route's own network_type 'stabilized', as the river-route imported routes it",
+}
+# the results of that comparison, one folder per version of river-route: before is the code that routed the
+# matrix, copied into vendor/river-route-matrix, and after is ../river-route with the changes
+CHANGES = DATA / 'river-route-changes'
+CODES = {'before': ROOT / 'vendor' / 'river-route-matrix', 'after': ROOT.parent / 'river-route'}
 
 
-def run_dir(scenario: str, treatment: str, dt: int) -> Path:
-    """The output directory of one cell of the simulation matrix."""
-    if treatment not in TREATMENTS:
-        raise ValueError(f'unknown treatment {treatment!r}, expected one of {sorted(TREATMENTS)}')
+def run_dir(scenario: str, treatment: str, dt: int, root: Path = RESULTS) -> Path:
+    """The output directory of one cell of the simulation matrix, or of the comparison under ``root``."""
+    if treatment not in TREATMENTS and treatment not in CHANGE_TREATMENTS:
+        raise ValueError(f'unknown treatment {treatment!r}, expected one of {sorted(TREATMENTS | CHANGE_TREATMENTS)}')
     if dt <= 0 or DT_RUNOFF % dt != 0:
         raise ValueError(f'dt must be a positive divisor of {DT_RUNOFF}, got {dt}')
-    return RESULTS / scenario / f'{treatment}__dt{dt:04d}s'
+    return root / scenario / f'{treatment}__dt{dt:04d}s'

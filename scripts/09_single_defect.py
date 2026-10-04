@@ -20,6 +20,7 @@ Run with the river-route environment:  ../river-route/.venv/bin/python scripts/0
 import json
 
 import matplotlib.pyplot as plt
+from matplotlib.lines import Line2D
 import numpy as np
 import pandas as pd
 import river_route as rr
@@ -189,55 +190,59 @@ def measure(kind: str, scenario: str, dt: int, table: pd.DataFrame, areas: np.nd
     return pd.DataFrame(rows)
 
 
-def plot(results: pd.DataFrame) -> None:
-    """Median and 90th percentile of the alternating and largest differences against distance below the seed."""
-    figure, axes = plt.subplots(1, 2, figsize=(7.2, 3.8), sharey=True, layout='constrained')
+SCENARIO_LABELS = {'synthetic-burst': 'Synthetic burst', 'synthetic-square': 'Synthetic square',
+                   'willamette-peak': 'Willamette peak', 'columbia-peak': 'Columbia peak'}
+KIND_STYLES = (('short', plotting.TREATMENT_COLORS['standard'], 'Short reach, untreated'),
+               ('long-substeps', plotting.TREATMENT_COLORS['substeps'], 'Long reach, substeps'),
+               ('long-substeps-xadj', plotting.TREATMENT_COLORS['substeps-xadj'], 'Long reach, x adjusted'))
+SPREAD = (Line2D([], [], color=plotting.INK, marker='o', markersize=3, label='Median'),
+          Line2D([], [], color=plotting.INK, linestyle='--', linewidth=1, label='90th percentile'))
+
+
+def draw_quantiles(axis: plt.Axes, data: pd.DataFrame, column: str, color: str) -> None:
+    """Median (solid) and 90th percentile (dashed) of one difference at each distance below the seeds, in percent."""
+    if data.empty:
+        raise ValueError(f'no seeds to draw for {column}')
     x = np.arange(len(DISTANCES_KM))
-    ramp = dict(zip(results['scenario'].unique(), plotting.DT_RAMP[::-1], strict=False))
-    for axis, column, title in ((axes[0], 'alternating', 'Alternating part'), (axes[1], 'max_difference', 'Largest')):
-        for scenario, color in ramp.items():
-            data = results[(results['scenario'] == scenario) & (results['dt'] == 3600)]
-            q50 = data.groupby('distance_km')[column].median().reindex(DISTANCES_KM)
-            q90 = data.groupby('distance_km')[column].quantile(0.9).reindex(DISTANCES_KM)
-            axis.plot(x, 100 * q50, color=color, marker='o', markersize=3, label=f'{scenario}, median')
-            axis.plot(x, 100 * q90, color=color, linestyle='--', linewidth=1, label=f'{scenario}, 90th percentile')
-        axis.set_yscale('log')
-        axis.set_xticks(x, [f'{d:g}' for d in DISTANCES_KM])
-        axis.set_xlabel('Channel distance below the seed (km)')
-        axis.set_title(f'{title} difference, Δt = 1 h', fontsize=9)
-    axes[0].set_ylabel('% of the range of discharge')
-    handles, labels = axes[0].get_legend_handles_labels()
-    figure.legend(handles, labels, loc='outside lower center', ncol=2, fontsize=7)
-    plotting.save(figure, 'single_defect_distance')
+    grouped = data.groupby('distance_km')[column]
+    axis.plot(x, 100 * grouped.median().reindex(DISTANCES_KM), color=color, marker='o', markersize=3)
+    axis.plot(x, 100 * grouped.quantile(0.9).reindex(DISTANCES_KM), color=color, linestyle='--', linewidth=1)
     return
 
 
-def plot_long(results: pd.DataFrame) -> None:
+def plot(results: pd.DataFrame) -> None:
     """
-    Largest difference below one seed, as a share of the seed's own range of discharge, which removes dilution: a short
-    reach left untreated against one long reach split into substeps, x held or x adjusted, at 1 h.
+    The difference one defect makes below it at 1 h. Top: a short reach left untreated, as a share of the range of
+    discharge downstream, its alternating part and its largest difference. Bottom: the largest difference as a share
+    of the seed's own range, which removes dilution, for a short reach and for a long reach split into substeps.
     """
-    figure, axes = plt.subplots(1, 2, figsize=(7.2, 3.4), sharey=True, layout='constrained')
-    x = np.arange(len(DISTANCES_KM))
-    kinds = (('short', plotting.TREATMENT_COLORS['standard'], 'Short reach left untreated'),
-             ('long-substeps', plotting.TREATMENT_COLORS['substeps'], 'Long reach in substeps'),
-             ('long-substeps-xadj', plotting.TREATMENT_COLORS['substeps-xadj'], 'Long reach in substeps, x adjusted'))
-    for axis, scenario in zip(axes, ('synthetic-burst', 'columbia-peak'), strict=True):
-        for kind, color, label in kinds:
-            data = results[(results['kind'] == kind) & (results['scenario'] == scenario) & (results['dt'] == 3600)]
-            grouped = data.groupby('distance_km')['max_difference_of_seed']
-            axis.plot(x, 100 * grouped.median().reindex(DISTANCES_KM), color=color, marker='o', markersize=3,
-                      label=f'{label}, median')
-            axis.plot(x, 100 * grouped.quantile(0.9).reindex(DISTANCES_KM), color=color, linestyle='--',
-                      linewidth=1, label=f'{label}, 90th percentile')
-        axis.set_yscale('log')
-        axis.set_xticks(x, [f'{d:g}' for d in DISTANCES_KM])
-        axis.set_xlabel('Channel distance below the seed (km)')
-        axis.set_title(f'{scenario}, Δt = 1 h', fontsize=9)
-    axes[0].set_ylabel("Largest difference\n(% of the seed's range)")
-    handles, labels = axes[0].get_legend_handles_labels()
-    figure.legend(handles, labels, loc='outside lower center', ncol=2, fontsize=7)
-    plotting.save(figure, 'single_defect_long_distance')
+    figure, axes = plt.subplots(2, 2, figsize=(plotting.WIDTH, 7.5), sharex=True, sharey='row')
+    hourly = results[results['dt'] == 3600]
+    short = hourly[hourly['kind'] == 'short']
+    ramp = dict(zip(SCENARIO_LABELS, plotting.DT_RAMP[::-1], strict=True))
+    for axis, column, title in ((axes[0, 0], 'alternating', '(a) Alternating part'),
+                                (axes[0, 1], 'max_difference', '(b) Largest difference')):
+        for scenario, color in ramp.items():
+            draw_quantiles(axis, short[short['scenario'] == scenario], column, color)
+        axis.set_title(title)
+    for axis, scenario, title in ((axes[1, 0], 'synthetic-burst', '(c) Synthetic burst'),
+                                  (axes[1, 1], 'columbia-peak', '(d) Columbia peak')):
+        for kind, color, _ in KIND_STYLES:
+            draw_quantiles(axis, hourly[(hourly['kind'] == kind) & (hourly['scenario'] == scenario)],
+                           'max_difference_of_seed', color)
+        axis.set_title(title)
+        axis.set_xlabel('km below the seed')
+    for row, label in ((0, '% of the range of discharge'), (1, "% of the seed's range")):
+        axes[row, 0].set_yscale('log')
+        axes[row, 0].set_ylabel(label)
+    axes[1, 0].set_xticks(np.arange(len(DISTANCES_KM)), [f'{d:g}' for d in DISTANCES_KM])
+    for axis in axes[1]:
+        axis.tick_params(axis='x', labelrotation=90)
+    scenarios = [Line2D([], [], color=color, label=SCENARIO_LABELS[name]) for name, color in ramp.items()]
+    axes[0, 1].legend(handles=[*scenarios, *SPREAD], loc='lower left')
+    kinds = [Line2D([], [], color=color, label=label) for _, color, label in KIND_STYLES]
+    figure.legend(handles=[*kinds, *SPREAD], loc='upper center', bbox_to_anchor=(0.5, 0.0), ncol=2)
+    plotting.save(figure, 'single_defect')
     return
 
 
@@ -256,8 +261,7 @@ if __name__ == '__main__':
                 print(kind, name, step, len(frames[-1]), flush=True)
     single = pd.concat(frames, ignore_index=True)
     metrics.save_table(single, 'single_defect')
-    plot(single[single['kind'] == 'short'])
-    plot_long(single)
+    plot(single)
     columns = ['alternating', 'max_difference', 'max_difference_of_seed', 'peak_relative']
     summary = single.groupby(['kind', 'scenario', 'dt', 'distance_km'])[columns]
     print(summary.median().unstack('distance_km').round(5).to_string())

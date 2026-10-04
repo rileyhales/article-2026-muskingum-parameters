@@ -120,9 +120,9 @@ def run_synthetic(scenario: str, treated: treatments.Treated, dt: int, out: Path
     return summary
 
 
-def run_cell(scenario: str, treatment: str, dt: int, threads: int, force: bool) -> None:
-    """Route one cell of the matrix and write its outputs, unless they exist already."""
-    out = config.run_dir(scenario, treatment, dt)
+def run_cell(scenario: str, treatment: str, dt: int, threads: int, force: bool, root: Path = config.RESULTS) -> None:
+    """Route one cell of the matrix, or of the comparison under ``root``, and write its outputs unless they exist."""
+    out = config.run_dir(scenario, treatment, dt, root)
     if (out / 'meta.json').exists() and not force:
         print(f'{out.relative_to(config.ROOT)} exists, skipping', flush=True)
         return
@@ -139,9 +139,9 @@ def run_cell(scenario: str, treatment: str, dt: int, threads: int, force: bool) 
         summary = run_synthetic(scenario, treated, dt, out, threads)
     meta = {
         'scenario': scenario, 'treatment': treatment, 'dt_routing': dt, 'dt_runoff': config.DT_RUNOFF,
-        'description': config.TREATMENTS[treatment], 'rivers_too_long': int(too_long.sum()),
+        'description': (config.TREATMENTS | config.CHANGE_TREATMENTS)[treatment], 'rivers_too_long': int(too_long.sum()),
         'rivers_too_short': int(too_short.sum()), 'rivers_removed': int((~treated.kept).sum()), **summary,
-        'threads': threads, 'river_route_version': rr.__version__,
+        'threads': threads, 'river_route_version': rr.__version__, 'river_route_path': str(Path(rr.__file__).parent),
         'finished': datetime.now(UTC).isoformat(timespec='seconds'),
     }
     (out / 'meta.json').write_text(json.dumps(meta, indent=2))

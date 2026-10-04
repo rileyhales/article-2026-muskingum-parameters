@@ -11,7 +11,7 @@ import numpy as np
 
 __all__ = [
     'coefficients',
-    'positivity_window',
+    'non_negative_courant_range',
     'upstream_impulse_response',
     'lateral_impulse_response',
     'frequency_response',
@@ -38,7 +38,7 @@ def coefficients(courant: np.ndarray | float, x: np.ndarray | float) -> tuple[np
     return c1, c2, c3, c1 + c2
 
 
-def positivity_window(x: np.ndarray | float) -> tuple[np.ndarray, np.ndarray]:
+def non_negative_courant_range(x: np.ndarray | float) -> tuple[np.ndarray, np.ndarray]:
     """The range of Courant numbers 2x <= C <= 2(1 - x) over which every coefficient is non-negative."""
     x = np.asarray(x, dtype=np.float64)
     if np.any(x > 0.5):
@@ -50,9 +50,9 @@ def positivity_window(x: np.ndarray | float) -> tuple[np.ndarray, np.ndarray]:
 
 
 def upstream_impulse_response(courant: float, x: float, n: int) -> np.ndarray:
-    """Discharge at levels 0..n-1 after a unit pulse of upstream inflow at level 0: c1, then (c2 + c1 c3) c3^(j-1)."""
+    """Discharge at steps 0..n-1 after a unit pulse of upstream inflow at step 0: c1, then (c2 + c1 c3) c3^(j-1)."""
     if n < 2:
-        raise ValueError('the response needs at least two levels')
+        raise ValueError('the response needs at least two steps')
     c1, c2, c3, _ = coefficients(courant, x)
     response = np.empty(n)
     response[0] = c1
@@ -63,9 +63,9 @@ def upstream_impulse_response(courant: float, x: float, n: int) -> np.ndarray:
 
 
 def lateral_impulse_response(courant: float, x: float, n: int) -> np.ndarray:
-    """Discharge at levels 0..n-1 after lateral inflow of one unit during step 0 only: 0, then c4 c3^(j-1)."""
+    """Discharge at steps 0..n-1 after lateral inflow of one unit during step 0 only: 0, then c4 c3^(j-1)."""
     if n < 2:
-        raise ValueError('the response needs at least two levels')
+        raise ValueError('the response needs at least two steps')
     _, _, c3, c4 = coefficients(courant, x)
     response = np.zeros(n)
     response[1:] = c4 * c3 ** np.arange(n - 1)
@@ -104,7 +104,7 @@ def nyquist_gains(courant: np.ndarray | float, x: np.ndarray | float) -> tuple[n
 
 
 def response_moments(response: np.ndarray, dt: float) -> tuple[float, float]:
-    """The mean and variance, in seconds and seconds squared, of a discrete response read at levels j * dt."""
+    """The mean and variance, in seconds and seconds squared, of a discrete response read at times j * dt."""
     if response.ndim != 1 or dt <= 0:
         raise ValueError('a response is a 1D series at a positive time step')
     volume = response.sum()
@@ -139,8 +139,8 @@ def route_reach(
 ) -> np.ndarray:
     """
     Route one reach in float64 exactly as river-route's recurrence does, negative discharge included.
-    ``inflow`` holds the upstream discharge at the levels 0..n of the routing steps, ``lateral`` the lateral inflow
-    rate held over each of the n // steps_per_value runoff steps. Returns the discharge at levels 0..n.
+    ``inflow`` holds the upstream discharge at the routing steps 0..n, ``lateral`` the lateral inflow rate held over
+    each of the n // steps_per_value runoff steps. Returns the discharge at steps 0..n.
     """
     n = inflow.shape[0] - 1
     if lateral.shape[0] * steps_per_value != n:

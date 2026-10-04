@@ -67,23 +67,22 @@ def time_cell(treatment: str, dt: int, table: pd.DataFrame, chunks: list, thread
 
 def plot(costs: pd.DataFrame) -> None:
     """Seconds to route a simulated year against dt, per treatment, at eight threads."""
-    figure, axis = plt.subplots(figsize=(7.2, 3.2), layout='constrained')
+    figure, axis = plt.subplots(figsize=(plotting.WIDTH, 4.0))
     steps = np.asarray(config.DT_ROUTING)
     data = costs[costs['threads'] == max(THREADS)]
     for treatment in config.TREATMENTS:
         rows = data[data['treatment'] == treatment].sort_values('dt')
         if rows.empty or treatment == 'reference':
             continue
-        axis.plot(rows['dt'], rows['seconds_per_simulated_year'], color=plotting.TREATMENT_COLORS[treatment],
-                  marker='o', markersize=3, label=plotting.TREATMENT_LABELS[treatment])
+        axis.plot(plotting.step_positions(rows['dt'], steps), rows['seconds_per_simulated_year'], marker='o',
+                  markersize=3, color=plotting.TREATMENT_COLORS[treatment], label=plotting.TREATMENT_LABELS[treatment])
     reference = data[data['treatment'] == 'reference']['seconds_per_simulated_year'].iloc[0]
     axis.axhline(reference, color=plotting.INK, linestyle='--', linewidth=1, label='Reference')
-    axis.set_xscale('log')
     axis.set_yscale('log')
-    axis.set_xticks(steps, [f'{s // 60}m' if s >= 60 else f'{s}s' for s in steps])
+    plotting.step_ticks(axis, steps)
     axis.set_xlabel('Routing time step')
     axis.set_ylabel(f'Seconds per simulated year\n({max(THREADS)} threads, Columbia)')
-    axis.legend(loc='outside right upper', fontsize=7)
+    axis.legend(loc='upper left', bbox_to_anchor=(1.0, 1.0))
     plotting.save(figure, 'cost_benchmark')
     return
 
@@ -92,7 +91,7 @@ def plot_tradeoff(costs: pd.DataFrame) -> None:
     """Accuracy against cost: mean absolute peak error of every cell against the seconds to route a simulated year."""
     errors = (('synthetic_summary', 'synthetic-burst', 'Synthetic burst: mean |peak error| (% of rise)'),
               ('era5_annual_summary', None, 'ERA5: mean |annual peak error| (%)'))
-    figure, axes = plt.subplots(1, 2, figsize=(7.2, 3.6), layout='constrained')
+    figure, axes = plt.subplots(1, 2, figsize=(plotting.WIDTH, 4.0))
     timing = costs[costs['threads'] == max(THREADS)][['treatment', 'dt', 'seconds_per_simulated_year']]
     for axis, (table, scenario, label) in zip(axes, errors, strict=True):
         summary = pd.read_csv(config.TABLES / f'{table}.csv')
@@ -111,7 +110,7 @@ def plot_tradeoff(costs: pd.DataFrame) -> None:
         axis.set_xlabel(f'Seconds per simulated year ({max(THREADS)} threads)')
         axis.set_ylabel(label)
     handles, labels = axes[0].get_legend_handles_labels()
-    figure.legend(handles, labels, loc='outside lower center', ncol=4)
+    figure.legend(handles, labels, loc='upper center', bbox_to_anchor=(0.5, 0.0), ncol=2)
     plotting.save(figure, 'cost_tradeoff')
     return
 

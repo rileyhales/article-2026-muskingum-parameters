@@ -21,12 +21,12 @@ OSCILLATION_THRESHOLD = 0.01  # an oscillation counts when its amplitude passes 
 SHOWN = ('standard', 'substeps', 'substeps-xadj', 'subcycles', 'stabilized', 'inflate-k', 'merge')
 
 
-def cells_of(scenario: str) -> list[tuple[str, int]]:
-    """Every (treatment, dt) that has been run for a scenario, the reference first."""
+def cells_of(scenario: str, root=config.RESULTS, shown=SHOWN) -> list[tuple[str, int]]:
+    """Every (treatment, dt) that has been run for a scenario under ``root``, the reference first."""
     found = [(config.REFERENCE[0], config.REFERENCE[1])]
-    for treatment in SHOWN:
+    for treatment in shown:
         for dt in config.DT_ROUTING:
-            if (config.run_dir(scenario, treatment, dt) / 'meta.json').exists():
+            if (config.run_dir(scenario, treatment, dt, root) / 'meta.json').exists():
                 found.append((treatment, dt))
     if len(found) < 2:
         raise FileNotFoundError(f'no cells of {scenario} have been run')
@@ -47,17 +47,19 @@ def river_measures(series: np.ndarray) -> dict[str, np.ndarray]:
     return measures
 
 
-def compare(scenario: str, network: rr.Network, area_km2: np.ndarray) -> pd.DataFrame:
-    """One row per river and cell: its errors against the reference and its class at the cell's dt."""
-    reference = metrics.load_cell(scenario, *config.REFERENCE)
+def compare(
+    scenario: str, network: rr.Network, area_km2: np.ndarray, root=config.RESULTS, shown=SHOWN
+) -> pd.DataFrame:
+    """One row per river and cell under ``root``: its errors against the reference and its class at the cell's dt."""
+    reference = metrics.load_cell(scenario, *config.REFERENCE, root)
     reference_series = np.asarray(reference.array('series'), dtype=np.float64)
     ref = river_measures(reference_series)
     rise = ref['peak'] - ref['start']
     if np.any(rise <= 0):
         raise ValueError('every river must rise in the reference')
     frames = []
-    for treatment, dt in cells_of(scenario):
-        cell = metrics.load_cell(scenario, treatment, dt)
+    for treatment, dt in cells_of(scenario, root, shown):
+        cell = metrics.load_cell(scenario, treatment, dt, root)
         rows = metrics.align(cell.river_ids, reference.river_ids)
         kept = rows >= 0
         series = np.asarray(cell.array('series'))[rows[kept]]
@@ -117,7 +119,7 @@ def summarize(rivers: pd.DataFrame, keys: list[str]) -> pd.DataFrame:
 
 def plot_errors(summary: pd.DataFrame) -> None:
     """Median and spread of the peak error, and the share of rivers whose peak hour moved, against dt."""
-    figure, axes = plt.subplots(3, 2, figsize=(7.2, 7.6), sharex=True, layout='constrained')
+    figure, axes = plt.subplots(3, 2, figsize=(plotting.WIDTH, 8.5), sharex=True)
     steps = np.asarray(config.DT_ROUTING)
     for column, scenario in enumerate(SCENARIOS):
         rows = summary[summary['scenario'] == scenario]
@@ -125,45 +127,45 @@ def plot_errors(summary: pd.DataFrame) -> None:
             data = rows[rows['treatment'] == treatment].sort_values('dt')
             style = {'color': plotting.TREATMENT_COLORS[treatment], 'marker': 'o', 'markersize': 3,
                      'label': plotting.TREATMENT_LABELS[treatment]}
-            axes[0, column].plot(data['dt'], 100 * data['peak_error_median'], **style)
-            axes[1, column].plot(data['dt'], 100 * data['peak_error_abs_mean'], **style)
-            axes[2, column].plot(data['dt'], 100 * data['timing_error_share'], **style)
+            positions = plotting.step_positions(data['dt'], steps)
+            axes[0, column].plot(positions, 100 * data['peak_error_median'], **style)
+            axes[1, column].plot(positions, 100 * data['peak_error_abs_mean'], **style)
+            axes[2, column].plot(positions, 100 * data['timing_error_share'], **style)
         axes[0, column].set_title(scenario.replace('synthetic-', 'Synthetic ').title())
         axes[0, column].axhline(0, color=plotting.MUTED, linewidth=0.6)
-        axes[2, column].set_xscale('log')
-        axes[2, column].set_xticks(steps, [f'{s // 60}m' if s >= 60 else f'{s}s' for s in steps], rotation=45)
+        plotting.step_ticks(axes[2, column], steps)
         axes[2, column].set_xlabel('Routing time step')
     axes[0, 0].set_ylabel('Median peak error\n(% of rise)')
     axes[1, 0].set_ylabel('Mean |peak error|\n(% of rise)')
     axes[2, 0].set_ylabel('Rivers with peak hour\nmoved (%)')
     handles, labels = axes[0, 0].get_legend_handles_labels()
-    figure.legend(handles, labels, loc='outside lower center', ncol=4)
+    figure.legend(handles, labels, loc='upper center', bbox_to_anchor=(0.5, 0.0), ncol=2)
     plotting.save(figure, 'synthetic_peak_errors')
     return
 
 
 def plot_artifacts(summary: pd.DataFrame) -> None:
     """Share of rivers oscillating, and with a dip, against dt, for the square wave and the burst."""
-    figure, axes = plt.subplots(1, 3, figsize=(7.2, 3.6), layout='constrained')
+    figure, grid = plt.subplots(2, 2, figsize=(plotting.WIDTH, 7.0))
+    axes, key = grid.flat[:3], grid.flat[3]  # three panels, and the fourth cell holds the legend
     steps = np.asarray(config.DT_ROUTING)
-    panels = (('synthetic-square', 'oscillating_share', 'Rivers with alternating error\n> 1% of rise, square (%)'),
-              ('synthetic-burst', 'dip_share', 'Rivers dipping > 1%\nof rise, burst (%)'),
-              ('synthetic-burst', 'rivers_with_negative_hours', 'Rivers with negative\ndischarge, burst'))
-    for axis, (scenario, column, label) in zip(axes, panels, strict=True):
+    panels = (('synthetic-square', 'oscillating_share', '(a) Alternating, square', 'Rivers > 1% of rise (%)'),
+              ('synthetic-burst', 'dip_share', '(b) Dipping, burst', 'Rivers > 1% of rise (%)'),
+              ('synthetic-burst', 'rivers_with_negative_hours', '(c) Negative, burst', 'Rivers'))
+    for axis, (scenario, column, title, label) in zip(axes, panels, strict=True):
         rows = summary[summary['scenario'] == scenario]
         scale = 1 if column == 'rivers_with_negative_hours' else 100
         for treatment in SHOWN:
             data = rows[rows['treatment'] == treatment].sort_values('dt')
-            axis.plot(data['dt'], scale * data[column], color=plotting.TREATMENT_COLORS[treatment], marker='o',
-                      markersize=3, label=plotting.TREATMENT_LABELS[treatment])
+            axis.plot(plotting.step_positions(data['dt'], steps), scale * data[column], marker='o', markersize=3,
+                      color=plotting.TREATMENT_COLORS[treatment], label=plotting.TREATMENT_LABELS[treatment])
         reference = rows[rows['treatment'] == 'reference'][column].iloc[0] * scale
         axis.axhline(reference, color=plotting.INK, linewidth=1, linestyle='--', label='Reference')
-        axis.set_xscale('log')
-        axis.set_xticks(steps, [f'{s // 60}m' if s >= 60 else f'{s}s' for s in steps], rotation=45)
+        plotting.step_ticks(axis, steps)
+        axis.set_title(title)
         axis.set_ylabel(label)
-        axis.set_xlabel('Routing time step')
-    handles, labels = axes[0].get_legend_handles_labels()
-    figure.legend(handles, labels, loc='outside lower center', ncol=4)
+    key.axis('off')
+    key.legend(*axes[0].get_legend_handles_labels(), loc='center')
     plotting.save(figure, 'synthetic_artifacts')
     return
 
@@ -192,7 +194,7 @@ def plot_examples(examples: dict[str, int]) -> None:
         ('synthetic-burst', 'outlet', (('reference', 30), ('standard', 3600), ('substeps', 60),
                                        ('substeps-xadj', 60), ('stabilized', 3600)), 'Columbia at the Pacific'),
     )
-    figure, axes = plt.subplots(1, 3, figsize=(7.2, 2.8), gridspec_kw={'wspace': 0.4})
+    figure, axes = plt.subplots(1, 3, figsize=(plotting.WIDTH, 4.0))
     for axis, (scenario, key, cells, title) in zip(axes, panels, strict=True):
         hours = slice(18, 18 + 48) if key != 'outlet' else slice(0, forcing.SYNTHETIC['hours'])
         for treatment, dt in cells:
@@ -206,9 +208,9 @@ def plot_examples(examples: dict[str, int]) -> None:
             on_top = treatment == 'reference'
             axis.plot(time, flow, color=plotting.TREATMENT_COLORS[treatment], label=label, linewidth=1.2,
                       zorder=5 if on_top else 2, linestyle='--' if on_top else '-')
-        axis.set_title(title, fontsize=9)
+        axis.set_title(title)
         axis.set_xlabel('Day' if key == 'outlet' else 'Hour')
-        axis.legend(loc='upper right', fontsize=6)
+        axis.legend(loc='upper right')
     axes[0].set_ylabel('Discharge (m³/s)')
     plotting.save(figure, 'synthetic_examples')
     return
