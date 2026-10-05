@@ -3,11 +3,14 @@ Analyze the synthetic scenarios: for every cell, each river's peak, peak hour, d
 alternating (period of two hours) and largest parts of its departure from the reference. Errors are normalized by
 the reference rise of each river, its peak less its steady baseflow, so a headwater and the outlet weigh the same.
 
-Writes tables/synthetic_summary.csv, tables/synthetic_by_class.csv, and the synthetic figures.
+``analyze`` writes tables/synthetic_summary.csv, tables/synthetic_by_class.csv, and tables/synthetic_examples.csv (the
+hydrographs of the example rivers) from the routed cells, then draws. ``draw`` draws the synthetic figures from those
+tables alone, showing the steps of config.DT_ROUTING, so a step left out needs nothing analyzed or routed again.
 
-Run with the river-route environment:  ../river-route/.venv/bin/python scripts/08_analyze_synthetic.py
+Run with the river-route environment:  ../river-route/.venv/bin/python scripts/08_analyze_synthetic.py [analyze|draw]
 """
 
+import argparse
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -19,6 +22,15 @@ from stability import config, forcing, metrics, plotting
 SCENARIOS = tuple(forcing.SYNTHETIC_PERTURBATIONS)
 OSCILLATION_THRESHOLD = 0.01  # an oscillation counts when its amplitude passes 1% of the river's rise
 SHOWN = ('standard', 'substeps', 'substeps-xadj', 'subcycles', 'stabilized', 'inflate-k', 'merge')
+# the panels of the example hydrographs: scenario, example river, the cells drawn with the reference, and title
+EXAMPLE_PANELS = (
+    ('synthetic-square', 'short', (('standard', 3600), ('subcycles', 3600), ('inflate-k', 3600), ('merge', 3600)),
+     'River too short for 1 h'),
+    ('synthetic-burst', 'dip', (('standard', 60), ('substeps', 60), ('substeps-xadj', 60)),
+     'Long river ahead of a sharp rise'),
+    ('synthetic-burst', 'outlet', (('standard', 3600), ('substeps', 60), ('substeps-xadj', 60), ('stabilized', 3600)),
+     'Columbia at the Pacific'),
+)
 
 
 def cells_of(scenario: str, root=config.RESULTS, shown=SHOWN) -> list[tuple[str, int]]:
@@ -184,30 +196,42 @@ def example_rivers(rivers: pd.DataFrame) -> dict[str, int]:
     }
 
 
-def plot_examples(examples: dict[str, int]) -> None:
-    """Hydrographs of the example rivers under the treatments that matter to each."""
-    panels = (
-        ('synthetic-square', 'short', (('reference', 30), ('standard', 3600), ('subcycles', 3600),
-                                       ('inflate-k', 3600), ('merge', 3600)), 'River too short for 1 h'),
-        ('synthetic-burst', 'dip', (('reference', 30), ('standard', 60), ('substeps', 60), ('substeps-xadj', 60)),
-         'Long river ahead of a sharp rise'),
-        ('synthetic-burst', 'outlet', (('reference', 30), ('standard', 3600), ('substeps', 60),
-                                       ('substeps-xadj', 60), ('stabilized', 3600)), 'Columbia at the Pacific'),
-    )
-    figure, axes = plt.subplots(1, 3, figsize=(plotting.WIDTH, 4.0))
-    for axis, (scenario, key, cells, title) in zip(axes, panels, strict=True):
-        hours = slice(18, 18 + 48) if key != 'outlet' else slice(0, forcing.SYNTHETIC['hours'])
-        for treatment, dt in cells:
+def example_series(examples: dict[str, int]) -> pd.DataFrame:
+    """The whole hourly series of each example river under the reference and the cells of its panel."""
+    frames = []
+    for scenario, key, cells, _ in EXAMPLE_PANELS:
+        for treatment, dt in (config.REFERENCE, *cells):
             cell = metrics.load_cell(scenario, treatment, dt)
             row = np.flatnonzero(cell.river_ids == examples[key])
             if row.shape[0] != 1:
-                continue
-            flow = np.asarray(cell.array('series')[row[0], hours])
-            time = np.arange(hours.start, hours.stop) / (24 if key == 'outlet' else 1)
-            label = plotting.TREATMENT_LABELS[treatment] + ('' if treatment == 'reference' else f', {dt} s')
+                continue  # the treatment removed the river
+            flow = np.asarray(cell.array('series')[row[0]], dtype=np.float64)
+            frames.append(pd.DataFrame({
+                'panel': key, 'scenario': scenario, 'river': examples[key], 'treatment': treatment, 'dt': dt,
+                'hour': np.arange(flow.shape[0]), 'discharge': flow,
+            }))
+    if not frames:
+        raise ValueError('no example series')
+    return pd.concat(frames, ignore_index=True)
+
+
+def plot_examples(series: pd.DataFrame) -> None:
+    """Hydrographs of the example rivers under the treatments that matter to each, from the examples table."""
+    figure, axes = plt.subplots(1, 3, figsize=(plotting.WIDTH, 4.0))
+    for axis, (_, key, cells, title) in zip(axes, EXAMPLE_PANELS, strict=True):
+        hours = (18, 18 + 48) if key != 'outlet' else (0, forcing.SYNTHETIC['hours'])
+        panel = series[(series['panel'] == key) & series['hour'].between(hours[0], hours[1] - 1)]
+        for treatment, dt in (('reference', None), *cells):
+            data = panel[panel['treatment'] == treatment]
+            if dt is not None:
+                data = data[data['dt'] == dt]
+            if data.empty:
+                continue  # a step left out of the figures, or a river the treatment removed
+            label = plotting.TREATMENT_LABELS[treatment] + ('' if dt is None else f', {dt} s')
             on_top = treatment == 'reference'
-            axis.plot(time, flow, color=plotting.TREATMENT_COLORS[treatment], label=label, linewidth=1.2,
-                      zorder=5 if on_top else 2, linestyle='--' if on_top else '-')
+            axis.plot(data['hour'] / (24 if key == 'outlet' else 1), data['discharge'], label=label, linewidth=1.2,
+                      color=plotting.TREATMENT_COLORS[treatment], zorder=5 if on_top else 2,
+                      linestyle='--' if on_top else '-')
         axis.set_title(title)
         axis.set_xlabel('Day' if key == 'outlet' else 'Hour')
         axis.legend(loc='upper right')
@@ -216,8 +240,8 @@ def plot_examples(examples: dict[str, int]) -> None:
     return
 
 
-if __name__ == '__main__':
-    plotting.apply_style()
+def analyze() -> None:
+    """Measure every routed cell against the reference and write the tables the figures are drawn from."""
     network = rr.Network(config.NETWORK_FILE)
     metadata = pd.read_parquet(config.METADATA_FILE, columns=['riverId', 'DSContArea'])
     area = metadata['DSContArea'].to_numpy() / 1e6
@@ -225,10 +249,31 @@ if __name__ == '__main__':
     summary = summarize(rivers, ['scenario', 'treatment', 'dt'])
     metrics.save_table(summary, 'synthetic_summary')
     metrics.save_table(summarize(rivers, ['scenario', 'treatment', 'dt', 'class']), 'synthetic_by_class')
-    plot_errors(summary)
-    plot_artifacts(summary)
     examples = example_rivers(rivers)
-    plot_examples(examples)
+    metrics.save_table(example_series(examples), 'synthetic_examples')
     print(examples)
     with pd.option_context('display.width', 250, 'display.max_columns', 30):
         print(summary.round(4).to_string(index=False))
+    return
+
+
+def draw() -> None:
+    """Draw the synthetic figures from the analysis tables, at the steps of config.DT_ROUTING."""
+    summary = metrics.shown(metrics.load_table('synthetic_summary'))
+    plot_errors(summary)
+    plot_artifacts(summary)
+    if metrics.has_table('synthetic_examples'):
+        plot_examples(metrics.shown(metrics.load_table('synthetic_examples')))
+    else:
+        print('synthetic_examples not drawn: tables/synthetic_examples.csv is written by analyze')
+    return
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser.add_argument('action', nargs='?', default='analyze', choices=('analyze', 'draw'))
+    args = parser.parse_args()
+    plotting.apply_style()
+    if args.action == 'analyze':
+        analyze()
+    draw()

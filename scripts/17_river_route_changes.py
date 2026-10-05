@@ -14,14 +14,16 @@ Cells are routed for the synthetic burst, the square wave, and ERA5 2002-2011 at
 The before code is the river-route that routed the matrix, copied into vendor/river-route-matrix; a run checks that the
 river-route it imported is the version it was asked for.
 
-``analyze`` writes tables/river_route_changes_<scenario>.csv with every measure of every cell, tables/river_route_changes.csv
-with the measures of the manuscript, which it also writes between the river_route_changes markers of the manuscript, and
-the figure river_route_changes.
+``analyze`` writes tables/river_route_changes_<scenario>.csv with every measure of every cell, then draws. ``draw``
+writes tables/river_route_changes.csv with the measures of the manuscript, which it also writes between the
+river_route_changes markers of the manuscript, and the figure river_route_changes, from those tables alone, at the steps
+of config.DT_ROUTING, so a step left out needs nothing analyzed or routed again.
 
 Run with the river-route environment (python is ../river-route/.venv/bin/python):
     PYTHONPATH=vendor/river-route-matrix python scripts/17_river_route_changes.py run --code before --scenario era5-2002-2011
     python scripts/17_river_route_changes.py run --code after --scenario synthetic-burst
     python scripts/17_river_route_changes.py analyze
+    python scripts/17_river_route_changes.py draw
 """
 
 import argparse
@@ -160,7 +162,7 @@ def build_table(summaries: dict[str, pd.DataFrame]) -> pd.DataFrame:
     for code, treatment, label in ROWS:
         for index, (scenario, name, column, scale, decimals, signed) in enumerate(MEASURES):
             row = {'Version and treatment': label if index == 0 else '', 'Measure': name}
-            for dt, step in tables.STEP_LABELS.items():
+            for dt, step in tables.step_labels().items():
                 if (code, treatment, dt) not in indexed[scenario].index:
                     row[step] = '…'
                     continue
@@ -216,32 +218,36 @@ def plot(summaries: dict[str, pd.DataFrame]) -> None:
 
 
 def analyze() -> None:
-    """Summaries, tables, and the figure of both versions."""
-    plotting.apply_style()
+    """Summarize every cell of both versions and write the tables the manuscript table and figure are drawn from."""
     network = rr.Network(config.NETWORK_FILE)
     area = pd.read_parquet(config.METADATA_FILE, columns=['DSContArea'])['DSContArea'].to_numpy() / 1e6
-    tables = importlib.import_module('14_treatment_tables')
-    summaries = {}
-    for scenario in SCENARIOS:
-        summaries[scenario] = summarize(scenario, network, area)
-        metrics.save_table(summaries[scenario], f'river_route_changes_{scenario}')
-    table = build_table(summaries)
-    metrics.save_table(table, 'river_route_changes')
-    refreshed = tables.refresh_manuscript(config.MANUSCRIPT, 'river_route_changes', tables.to_markdown(table))
-    print('tables/river_route_changes*.csv written' + (', manuscript refreshed' if refreshed else ''))
-    plot(summaries)
     shown = ['code', 'treatment', 'dt', 'peak_error_median', 'peak_error_abs_mean', 'timing_mean_h',
              'timing_abs_mean_h', 'volume_error_abs_mean', 'short_peak_error_abs_mean', 'short_negative', 'work']
-    with pd.option_context('display.width', 250, 'display.max_columns', 30, 'display.max_rows', 200):
-        for scenario, summary in summaries.items():
+    for scenario in SCENARIOS:
+        summary = summarize(scenario, network, area)
+        metrics.save_table(summary, f'river_route_changes_{scenario}')
+        with pd.option_context('display.width', 250, 'display.max_columns', 30, 'display.max_rows', 200):
             print(scenario)
             print(summary[shown].round(4).to_string(index=False))
     return
 
 
+def draw() -> None:
+    """The manuscript table and the figure of both versions, from the analysis tables, at config.DT_ROUTING."""
+    plotting.apply_style()
+    tables = importlib.import_module('14_treatment_tables')
+    summaries = {s: metrics.shown(metrics.load_table(f'river_route_changes_{s}')) for s in SCENARIOS}
+    table = build_table(summaries)
+    metrics.save_table(table, 'river_route_changes')
+    refreshed = tables.refresh_manuscript(config.MANUSCRIPT, 'river_route_changes', tables.to_markdown(table))
+    print('tables/river_route_changes.csv written' + (', manuscript refreshed' if refreshed else ''))
+    plot(summaries)
+    return
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument('action', choices=('run', 'analyze'))
+    parser.add_argument('action', choices=('run', 'analyze', 'draw'))
     parser.add_argument('--code', choices=tuple(TREATMENTS))
     parser.add_argument('--scenario', choices=SCENARIOS)
     parser.add_argument('--threads', type=int, default=8)
@@ -252,4 +258,6 @@ if __name__ == '__main__':
             parser.error('run needs --code and --scenario')
         run(args.code, args.scenario, args.threads, args.force)
     else:
-        analyze()
+        if args.action == 'analyze':
+            analyze()
+        draw()

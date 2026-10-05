@@ -7,10 +7,14 @@ import json
 from pathlib import Path
 
 import numpy as np
+import pandas as pd
 
 from . import config
 
-__all__ = ['Cell', 'load_cell', 'align', 'peaks', 'nyquist_amplitude', 'dip_below_start', 'oscillation_hours']
+__all__ = [
+    'Cell', 'load_cell', 'align', 'peaks', 'nyquist_amplitude', 'dip_below_start', 'oscillation_hours', 'save_table',
+    'has_table', 'load_table', 'shown',
+]
 
 
 class Cell:
@@ -112,3 +116,32 @@ def save_table(frame, name: str) -> Path:
     if not path.exists():
         raise OSError(f'{path} was not written')
     return path
+
+
+def has_table(name: str) -> bool:
+    """Whether an analysis has written the table of this name."""
+    if not name:
+        raise ValueError('a table needs a name')
+    return (config.TABLES / f'{name}.csv').exists()
+
+
+def load_table(name: str) -> pd.DataFrame:
+    """An analysis table from the tables directory, which the figures and manuscript tables are drawn from."""
+    path = config.TABLES / f'{name}.csv'
+    if not path.exists():
+        raise FileNotFoundError(f'{path} has not been written; run the analysis that writes it')
+    return pd.read_csv(path)
+
+
+def shown(table: pd.DataFrame) -> pd.DataFrame:
+    """
+    The rows of a table the figures and manuscript tables show: those of the routing time steps of config.DT_ROUTING,
+    and the reference at whatever step it was routed. An analysis table keeps every cell it measured, so leaving a step
+    out of config.DT_ROUTING leaves it out of every figure and table without analyzing or routing anything again.
+    """
+    if 'dt' not in table.columns:
+        raise ValueError('the table must have a dt column')
+    keep = table['dt'].isin(config.DT_ROUTING)
+    if 'treatment' in table.columns:
+        keep |= table['treatment'] == 'reference'
+    return table[keep].reset_index(drop=True)

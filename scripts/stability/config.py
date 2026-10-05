@@ -59,8 +59,9 @@ METADATA_FILE = INPUTS / 'columbia_metadata.parquet'
 WEIGHTS_FILE = INPUTS / 'columbia_gridweights_era5.nc'
 ERA5_CATCHMENT_DIR = INPUTS / 'era5_catchment_runoff'
 
-# the base routing time steps of the matrix, seconds. Every one divides the hourly runoff step.
-DT_ROUTING = (30, 60, 300, 600, 900, 1800, 3600)
+# the base routing time steps of the matrix, seconds. Every one divides the hourly runoff step. The figures and
+# tables show only these steps, and the reference, of what the analysis tables hold.
+DT_ROUTING = (60, 300, 600, 900, 1800, 3600)
 DT_RUNOFF = 3600
 # the ERA5 period of the matrix: ten years holding all four event windows, after three months of spin-up that are routed
 # from a dry network and then discarded. The first cells were routed over 2000-2019, from a spin-up beginning 1999-10;
@@ -81,9 +82,9 @@ TREATMENTS = {
     'stabilized': 'substeps and subcycles together: river-route network_type stabilized before this study',
     'inflate-k': 'k of rivers too short for dt raised to the smallest k that keeps c3 non-negative',
     'merge': 'rivers too short for dt removed, their upstreams and runoff joined to the river downstream',
-    'reference': 'dt 30 s with every river subcycled to a step of at most k/5: the time-converged solution',
+    'reference': 'dt 60 s with every river subcycled to a step of at most k/5: the time-converged solution',
 }
-REFERENCE = ('reference', 30)
+REFERENCE = ('reference', 60)
 # the treatments of the comparison of river-route before and after the changes this study made to it
 # (scripts/17_river_route_changes.py), which are not cells of the matrix
 CHANGE_TREATMENTS = {

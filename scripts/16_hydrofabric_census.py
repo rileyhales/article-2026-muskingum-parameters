@@ -1,7 +1,7 @@
 """
 Census of reaches outside the window of non-negative Muskingum coefficients in the hydrofabrics of large-scale routing:
-TDX-Hydro as delineated, HydroRIVERS, MERIT-Basins, NHDPlus V2, and NHDPlus HR, and, in the tables only, TDX-Hydro as
-processed for RFS v3.
+TDX-Hydro as delineated, HydroRIVERS, MERIT-Basins, NHDPlus V2, GRIT, and HydroSHEDS v2 (North and South America), and,
+in the tables only, TDX-Hydro as processed for RFS v3.
 Every reach of every hydrofabric is given a travel time by the RFS v3 velocity law (Eq. 17) from its length and Strahler
 order, and x = 0.2, so the census compares how each segmentation places reach lengths relative to the window,
 independently of each model's own parameters. The figures show the hydrofabrics as published, not routing networks
@@ -29,12 +29,17 @@ MERIT_DIR = HYDROGRAPHY / 'merit-hydro-rivers' / 'MERIT-Hydro_v07_Basins_v01_bug
 MERIT_REGIONS = 9  # the Pfafstetter level 1 basins that together cover the globe
 NHDPLUS_V2_FILE = HYDROGRAPHY / 'NHDPlusV21_National_Seamless_Flattened_Lower48.gdb'
 NHDPLUS_V2_COASTLINE = 'Coastline'  # the NHDPlus V2 feature type of coastlines
-NHDPLUS_HR_FILE = HYDROGRAPHY / 'NHDPlus_H_National_Release_2_GDB.gdb'
-NHD_COASTLINE = 566  # the NHD feature type of coastlines, network flowlines that are not channels and have no order
-NHD_NO_DATA = -9998  # the value NHDPlus HR gives a missing attribute
-DT_CENSUS = (30, 60, 300, 600, 900, 1800, 3600, 7200, 10800)  # routing time steps, seconds
+GRIT_DIR = HYDROGRAPHY / 'grit_segments_8857'  # the segments of GRIT v1.0, one GeoPackage per region
+GRIT_REGIONS = 7
+HYDROSHEDS_V2_DIR = HYDROGRAPHY / 'hydrosheds_v2'  # the 1 arc-second river networks of HydroSHEDS v2, one per region
+HYDROSHEDS_V2_REGIONS = ('north-america', 'south-america')
+DT_CENSUS = (60, 300, 600, 900, 1800, 3600, 7200, 10800)  # routing time steps, seconds
 QUANTILES = (0.01, 0.10, 0.50, 0.90, 0.99)  # of reach length and travel time
-K_WINDOWS = (300, 3600)  # the steps whose window of k the travel time figure shades
+SHORT_REACHES = (100, 1000)  # m: the lengths below which the property table counts reaches
+LONG_REACHES = (10000,)  # m: and above which
+K_STEPS = (300, 1800, 3600)  # the routing time steps the travel time figure marks at k = dt
+FIGURE_VELOCITY = 0.5  # m/s: the one celerity the travel time figure gives every reach, so its k is L / v
+CLEAR_MARGIN = 4  # points: how far every curve must stay from the labels and legends of the figures
 
 
 def downstream_rows(ids: np.ndarray, next_ids: np.ndarray, outlet: np.ndarray) -> np.ndarray:
@@ -49,6 +54,32 @@ def downstream_rows(ids: np.ndarray, next_ids: np.ndarray, outlet: np.ndarray) -
     if np.any(down[~outlet] < 0):
         raise ValueError('a downstream id is not a reach of the network')
     return down
+
+
+def strahler_order(down: np.ndarray, rank: np.ndarray) -> np.ndarray:
+    """Strahler order of every reach of a tree, from the row of its downstream reach (-1 at an outlet) and a rank that
+    rises from every reach to its downstream reach."""
+    if down.shape != rank.shape:
+        raise ValueError('downstream row and rank must be one per reach')
+    has_down = down >= 0
+    if np.any(rank[down[has_down]] <= rank[has_down]):
+        raise ValueError('the rank must rise from every reach to its downstream reach')
+    n = down.shape[0]
+    order = [1] * n
+    highest = [0] * n  # the highest order among the reaches flowing into each reach
+    count = [0] * n  # and how many of them have it
+    downstream = down.tolist()
+    for row in np.argsort(rank, kind='stable').tolist():  # every reach after all the reaches upstream of it
+        if highest[row] > 0:
+            order[row] = highest[row] + (1 if count[row] >= 2 else 0)
+        below = downstream[row]
+        if below < 0:
+            continue
+        if order[row] > highest[below]:
+            highest[below], count[below] = order[row], 1
+        elif order[row] == highest[below]:
+            count[below] += 1
+    return np.array(order, dtype=np.int64)
 
 
 def network(length_m: np.ndarray, order: np.ndarray, down: np.ndarray) -> pd.DataFrame:
@@ -150,29 +181,51 @@ def load_nhdplus_v2() -> pd.DataFrame:
     return network(reaches['LENGTHKM'].to_numpy() * 1000, reaches['StreamOrde'].to_numpy(), down)
 
 
-def load_nhdplus_hr() -> pd.DataFrame:
-    """Every network flowline of NHDPlus High Resolution (national release 2) but the coastlines."""
-    columns = ['hydroseq', 'dnhydroseq', 'terminalpa', 'ftype', 'streamorde', 'lengthkm']
-    flowlines = pyogrio.read_dataframe(
-        NHDPLUS_HR_FILE, layer='NetworkNHDFlowline', columns=columns, read_geometry=False,
+def load_grit() -> pd.DataFrame:
+    """Every segment of GRIT v1.0, from its seven regions, with each bifurcation reduced to its main branch."""
+    files = sorted(GRIT_DIR.glob('GRITv1.0_segments_*_EPSG8857.gpkg'))
+    if len(files) != GRIT_REGIONS:
+        raise FileNotFoundError(f'expected {GRIT_REGIONS} GRIT regions in {GRIT_DIR}, found {len(files)}')
+    columns = ['global_id', 'downstream_line_ids', 'is_mainstem', 'width_adjusted', 'strahler_order', 'length']
+    segments = pd.concat(
+        [pyogrio.read_dataframe(file, layer='lines', columns=columns, read_geometry=False) for file in files],
+        ignore_index=True,
     )
-    coast = flowlines['ftype'].to_numpy() == NHD_COASTLINE
-    reaches = flowlines[~coast]
-    if np.any(reaches['streamorde'].to_numpy() < 1):
-        raise ValueError('an NHDPlus HR flowline that is not a coastline has no stream order')
-    # a flowline drains along the main path, to the flowline whose hydroseq is its dnhydroseq, so a minor divergence
-    # begins with no inflowing flowline; dnhydroseq is 0 at the outlet of a network, missing or -9998 at a few outlets,
-    # and flowlines that drain to a coastline end there
-    missing = reaches['dnhydroseq'].isna().to_numpy() | (reaches['dnhydroseq'].to_numpy() == NHD_NO_DATA)
-    if np.any(reaches['terminalpa'].to_numpy()[missing] != reaches['hydroseq'].to_numpy()[missing]):
-        raise ValueError('an NHDPlus HR flowline with no dnhydroseq is not the outlet of its network')
-    next_ids = np.where(missing, 0, reaches['dnhydroseq'].to_numpy())
-    to_coast = np.isin(next_ids, flowlines['hydroseq'].to_numpy()[coast])
-    print(f'NHDPlus HR: {coast.sum()} coastline flowlines left out, {to_coast.sum()} flowlines that drain to them and '
-          f'{missing.sum()} with no dnhydroseq kept as outlets')
-    outlet = (next_ids == 0) | to_coast
-    down = downstream_rows(reaches['hydroseq'].to_numpy(), next_ids, outlet)
-    return network(reaches['lengthkm'].to_numpy() * 1000, reaches['streamorde'].to_numpy(), down)
+    # a segment that ends at a bifurcation lists every branch below it; the network keeps one, the branch GRIT flags as
+    # the main stem (always the widest), else the widest, else the lowest id, so it is a tree like the others
+    links = segments[['global_id']].assign(next_id=segments['downstream_line_ids'].str.split(',')).explode('next_id')
+    links = links[links['next_id'] != ''].astype({'next_id': np.int64})
+    branches = segments.set_index('global_id').loc[links['next_id'], ['is_mainstem', 'width_adjusted']]
+    links = links.assign(is_mainstem=branches['is_mainstem'].to_numpy(), width=branches['width_adjusted'].to_numpy())
+    main = links.sort_values(
+        ['global_id', 'is_mainstem', 'width', 'next_id'], ascending=[True, False, False, True],
+    ).drop_duplicates('global_id')
+    outlet = segments['downstream_line_ids'].to_numpy() == ''
+    next_ids = main.set_index('global_id')['next_id'].reindex(segments['global_id']).fillna(-1).to_numpy(np.int64)
+    if not np.array_equal(outlet, next_ids == -1):
+        raise ValueError('a GRIT segment must be an outlet exactly when it lists no downstream segment')
+    down = downstream_rows(segments['global_id'].to_numpy(), next_ids, outlet)
+    # GRIT's strahler_order rises along every link and reaches into the thousands: it ranks the segments for routing in
+    # topological order rather than giving Strahler's order, which is computed here on the tree
+    order = strahler_order(down, segments['strahler_order'].to_numpy())
+    bifurcations = int((links['global_id'].value_counts() > 1).sum())
+    print(f'GRIT: {len(links) - len(main)} branches below {bifurcations} bifurcations left out of the tree')
+    return network(segments['length'].to_numpy(), order, down)
+
+
+def load_hydrosheds_v2() -> pd.DataFrame:
+    """Every stream of the HydroSHEDS v2 river networks of North and South America."""
+    columns = ['STRM_ID', 'STRM_DN', 'LENGTH_KM', 'ORD_STRAH']
+    regions = []
+    for region in HYDROSHEDS_V2_REGIONS:
+        file = HYDROSHEDS_V2_DIR / f'{region}_RIV_1s_v2r0.gdb'
+        layer = f'{region.replace("-", "_")}_RIV_STREAMS_1s_v2r0'
+        regions.append(pyogrio.read_dataframe(file, layer=layer, columns=columns, read_geometry=False))
+    # the stream ids of each region continue from those of the region before, so the regions form one table
+    streams = pd.concat(regions, ignore_index=True)
+    outlet = streams['STRM_DN'].to_numpy() == -1
+    down = downstream_rows(streams['STRM_ID'].to_numpy(), streams['STRM_DN'].to_numpy(), outlet)
+    return network(streams['LENGTH_KM'].to_numpy() * 1000, streams['ORD_STRAH'].to_numpy(), down)
 
 
 HYDROFABRICS: dict[str, Callable[[], pd.DataFrame]] = {
@@ -181,10 +234,11 @@ HYDROFABRICS: dict[str, Callable[[], pd.DataFrame]] = {
     'HydroRIVERS': load_hydrorivers,
     'MERIT-Basins': load_merit_basins,
     'NHDPlus V2': load_nhdplus_v2,
-    'NHDPlus HR': load_nhdplus_hr,
+    'GRIT': load_grit,
+    'HydroSHEDS v2': load_hydrosheds_v2,
 }
 # the hydrofabrics as published
-FIGURE_HYDROFABRICS = ('TDX-Hydro', 'HydroRIVERS', 'MERIT-Basins', 'NHDPlus V2', 'NHDPlus HR')
+FIGURE_HYDROFABRICS = ('TDX-Hydro', 'HydroRIVERS', 'MERIT-Basins', 'NHDPlus V2', 'GRIT', 'HydroSHEDS v2')
 
 
 def sign_table(name: str, k: np.ndarray) -> pd.DataFrame:
@@ -204,16 +258,24 @@ def sign_table(name: str, k: np.ndarray) -> pd.DataFrame:
     return table
 
 
-def length_summary(name: str, table: pd.DataFrame, k: np.ndarray) -> pd.DataFrame:
-    """Reach count, zero-length reaches, and the distribution of reach length and travel time."""
-    length = table['length_m'].to_numpy()
+def property_table(name: str, table: pd.DataFrame, k: np.ndarray) -> pd.DataFrame:
+    """Size and branching of a hydrofabric, and the distribution of its reach lengths and travel times."""
+    length, down = table['length_m'].to_numpy(), table['down'].to_numpy()
     if k.shape != length.shape:
         raise ValueError('k must be one per reach')
+    # a reach with exactly one inflowing reach begins where no streams meet, so its hydrofabric splits a stream there
+    inflows = np.bincount(down[down >= 0], minlength=length.shape[0])
     row = {
-        'hydrofabric': name, 'reaches': length.shape[0], 'zero_length': int((length == 0).sum()),
+        'hydrofabric': name, 'reaches': length.shape[0], 'outlets': int((down < 0).sum()),
         'order_min': int(table['order'].min()), 'order_max': int(table['order'].max()),
+        'first_order_pct': 100 * float(np.mean(table['order'].to_numpy() == 1)),
+        'one_inflow_pct': 100 * float(np.mean(inflows == 1)), 'zero_length': int((length == 0).sum()),
         'length_mean_m': float(length.mean()), 'length_total_km': float(length.sum() / 1000),
     }
+    for bound in SHORT_REACHES:
+        row[f'shorter_{bound}_m_pct'] = 100 * float(np.mean(length < bound))
+    for bound in LONG_REACHES:
+        row[f'longer_{bound}_m_pct'] = 100 * float(np.mean(length > bound))
     quantiles = zip(QUANTILES, np.quantile(length, QUANTILES), np.quantile(k, QUANTILES))
     for q, length_q, k_q in quantiles:
         row[f'length_p{100 * q:02.0f}_m'] = float(length_q)
@@ -253,32 +315,65 @@ def topology_table(name: str, table: pd.DataFrame, k: np.ndarray) -> pd.DataFram
     return result
 
 
+def require_lines_clear(artist: plt.Artist, what: str) -> None:
+    """Raise if a line of the artist's axes, drawn straight between its points, passes through the artist."""
+    axis = artist.axes
+    axis.figure.canvas.draw()  # lay the figure out, so the artist has its final size in data units
+    margin = CLEAR_MARGIN * axis.figure.dpi / 72  # pixels
+    box = artist.get_window_extent().padded(margin).transformed(axis.transData.inverted())
+    for line in axis.get_lines():
+        x, y = (np.asarray(values, dtype=np.float64) for values in line.get_data())
+        if np.any(np.diff(x) <= 0):
+            raise ValueError(f'the points of {line.get_label()} must rise in x')
+        # a line straight between its points reaches its extremes across the artist at its points or the artist's edges
+        across = np.concatenate([y[(x > box.x0) & (x < box.x1)], np.interp([box.x0, box.x1], x, y)])
+        if across.min() < box.y1 and across.max() > box.y0:
+            raise ValueError(f'{line.get_label()} passes through {what}')
+    return
+
+
 def plot_signs(signs: pd.DataFrame) -> None:
-    """Share of reaches too long, inside the window, and too short at each step, one line per hydrofabric."""
+    """Share of reaches too long, inside the window, and too short at each step, one panel above the next."""
     panels = (('too_long_pct', 'c₁ < 0 (too long)'), ('valid_pct', 'All coefficients ≥ 0'),
               ('too_short_pct', 'c₃ < 0 (too short)'))
-    figure, grid = plt.subplots(2, 2, figsize=(plotting.WIDTH, 7.0))
-    axes, key = grid.flat[:3], grid.flat[3]  # three panels, and the fourth cell holds the legend
-    steps = np.arange(len(DT_CENSUS))  # the steps in order, evenly spaced
+    figure, axes = plt.subplots(3, 1, sharex=True, figsize=(plotting.WIDTH, 7.5))
+    hours = np.asarray(DT_CENSUS) / 3600  # the steps at their own spacing
     for axis, (column, title) in zip(axes, panels, strict=True):
         for name, rows in signs.groupby('hydrofabric', sort=False):
             if not np.array_equal(rows['dt_s'].to_numpy(), DT_CENSUS):
                 raise ValueError(f'{name} must have one row per census step, in order')
             # unclipped, so the markers at 0 and 100% show whole
-            axis.plot(steps, rows[column], marker=plotting.HYDROFABRIC_MARKERS[name], markersize=5,
+            axis.plot(hours, rows[column], marker=plotting.HYDROFABRIC_MARKERS[name], markersize=5,
                       color=plotting.HYDROFABRIC_COLORS[name], label=name, clip_on=False)
-        plotting.step_ticks(axis, DT_CENSUS)
         axis.set_title(title)
         axis.set_ylim(0, 100)
         axis.set_ylabel('Share of reaches (%)')
-    key.axis('off')
-    key.legend(*axes[0].get_legend_handles_labels(), loc='center')
+    ticks = np.arange(0, hours[-1] + 0.5, 0.5)
+    axes[-1].set_xticks(ticks, [f'{tick:g}' for tick in ticks])
+    axes[-1].set_xlim(0, hours[-1])
+    axes[-1].set_xlabel('Routing time step (h)')
+    # no step puts much more than half the reaches inside the window, so the top of that panel holds the legend
+    legend = axes[1].legend(loc='upper center', ncol=3)
+    require_lines_clear(legend, 'the legend')
     plotting.save(figure, 'hydrofabric_census_signs')
     return
 
 
+def require_clear(artist: plt.Artist, what: str, curves: dict[str, np.ndarray], share: np.ndarray) -> None:
+    """Raise if a curve of the distributions passes through a label or the legend."""
+    axis = artist.axes
+    axis.figure.canvas.draw()  # lay the figure out, so the artist has its final size in data units
+    margin = CLEAR_MARGIN * axis.figure.dpi / 72  # pixels
+    box = artist.get_window_extent().padded(margin).transformed(axis.transData.inverted())
+    # each curve rises monotonically, so across the artist it spans the shares at the artist's two ends
+    for name, k in curves.items():
+        if np.interp(box.x0, k, share) < box.y1 and np.interp(box.x1, k, share) > box.y0:
+            raise ValueError(f'{name} passes through {what}')
+    return
+
+
 def plot_distributions(curves: dict[str, np.ndarray]) -> None:
-    """Distribution of travel time by Eq. 17, read also as the length of a second-order reach, with two windows of k."""
+    """Distribution of travel time at one celerity for every reach, read also as reach length, with steps marked."""
     if not curves:
         raise ValueError('no hydrofabrics')
     figure, axis = plt.subplots(figsize=(plotting.WIDTH, 4.0))
@@ -289,19 +384,23 @@ def plot_distributions(curves: dict[str, np.ndarray]) -> None:
             raise ValueError('every curve must be sampled at the same shares')
         axis.plot(k, share, color=plotting.HYDROFABRIC_COLORS[name], marker=plotting.HYDROFABRIC_MARKERS[name],
                   markersize=5, markevery=marked.tolist(), label=name)
-    for dt in K_WINDOWS:
-        low, high = dt / (2 * (1 - census.X)), dt / (2 * census.X)
-        axis.axvspan(low, high, color=plotting.GRID, zorder=0, linewidth=0)
-        axis.text(np.sqrt(low * high), 75, plotting.step_label(dt), ha='center', va='center', color=plotting.MUTED)
     axis.set_xscale('log')
     axis.set_xlim(10, 1e6)
     axis.set_ylim(0, 100)
-    axis.set_xlabel('k by Eq. 17 (s)')
+    axis.set_xlabel(f'k = L / v, v = {FIGURE_VELOCITY:g} m s⁻¹ (s)')
     axis.set_ylabel('Cumulative share of reaches (%)')
-    axis.legend(loc='lower right')
-    v = float(census.velocity(np.array([2]))[0])  # the celerity of a second-order reach, at which L = v k
+    # compact, to stay clear of the curves
+    axis.legend(loc='lower right', fontsize=8, markerscale=0.8, handlelength=1.2, handletextpad=0.4, labelspacing=0.2,
+                borderpad=0.2, borderaxespad=0.2)
+    v = FIGURE_VELOCITY
     length = axis.secondary_xaxis('top', functions=(lambda k: v * k / 1000, lambda km: 1000 * km / v))
-    length.set_xlabel(f'Length of a second-order reach, v = {v:g} m s⁻¹ (km)')
+    length.set_xlabel('Reach length (km)')
+    for dt in K_STEPS:
+        axis.axvline(dt, color=plotting.MUTED, linewidth=1, linestyle='--', zorder=1.5)
+        label = axis.annotate(plotting.step_label(dt), (dt, 97), xytext=(-4, 0), textcoords='offset points',
+                              rotation=90, ha='right', va='top', color=plotting.MUTED)
+        require_clear(label, f'the label {label.get_text()}', curves, share)
+    require_clear(axis.get_legend(), 'the legend', curves, share)
     plotting.save(figure, 'hydrofabric_census_distributions')
     return
 
@@ -312,18 +411,18 @@ if __name__ == '__main__':
     drawn = set(FIGURE_HYDROFABRICS)
     if not drawn <= set(HYDROFABRICS) or not drawn <= set(plotting.HYDROFABRIC_COLORS):
         raise ValueError('every hydrofabric of the figures must be censused and have a color')
-    results = {'signs': [], 'lengths': [], 'orders': [], 'topology': []}
+    results = {'signs': [], 'properties': [], 'orders': [], 'topology': []}
     curves = {}
     grid = np.linspace(0, 1, 2001)
     for name, load in HYDROFABRICS.items():
         table = load()
         k = census.travel_time(table['length_m'].to_numpy(), table['order'].to_numpy())
         results['signs'].append(sign_table(name, k))
-        results['lengths'].append(length_summary(name, table, k))
+        results['properties'].append(property_table(name, table, k))
         results['orders'].append(order_table(name, table, k))
         results['topology'].append(topology_table(name, table, k))
         if name in FIGURE_HYDROFABRICS:
-            curves[name] = np.quantile(k, grid)
+            curves[name] = np.quantile(table['length_m'].to_numpy() / FIGURE_VELOCITY, grid)
         print(f'{name}: {len(table):,} reaches')
     frames = {key: pd.concat(parts, ignore_index=True) for key, parts in results.items()}
     for key, frame in frames.items():

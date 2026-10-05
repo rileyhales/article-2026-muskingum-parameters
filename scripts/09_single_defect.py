@@ -11,12 +11,14 @@ of another's farthest downstream point. The difference is measured at fixed chan
 For long seeds the network is routed standard, and again with a batch of seeds split into substeps, x held or x
 adjusted, and every other river whole: the difference is what treating that one river changes downstream.
 
-Writes tables/single_defect.csv, one row per kind, scenario, dt, seed, and distance, and figures
-single_defect_distance and single_defect_long_distance.
+``analyze`` routes the seeds and writes tables/single_defect.csv, one row per kind, scenario, dt, seed, and distance,
+then draws. ``draw`` draws figure single_defect from that table alone, at the steps of config.DT_ROUTING, so a step
+left out needs nothing routed again.
 
-Run with the river-route environment:  ../river-route/.venv/bin/python scripts/09_single_defect.py
+Run with the river-route environment:  ../river-route/.venv/bin/python scripts/09_single_defect.py [analyze|draw]
 """
 
+import argparse
 import json
 
 import matplotlib.pyplot as plt
@@ -246,8 +248,8 @@ def plot(results: pd.DataFrame) -> None:
     return
 
 
-if __name__ == '__main__':
-    plotting.apply_style()
+def analyze() -> None:
+    """Route every seed of every kind, scenario, and step, and write the table the figure is drawn from."""
     columbia = hydrofabric.load()
     catchment_area = forcing.catchment_areas()
     frames = []
@@ -261,8 +263,18 @@ if __name__ == '__main__':
                 print(kind, name, step, len(frames[-1]), flush=True)
     single = pd.concat(frames, ignore_index=True)
     metrics.save_table(single, 'single_defect')
-    plot(single)
     columns = ['alternating', 'max_difference', 'max_difference_of_seed', 'peak_relative']
     summary = single.groupby(['kind', 'scenario', 'dt', 'distance_km'])[columns]
     print(summary.median().unstack('distance_km').round(5).to_string())
     print(summary.quantile(0.9).unstack('distance_km').round(5).to_string())
+    return
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser.add_argument('action', nargs='?', default='analyze', choices=('analyze', 'draw'))
+    args = parser.parse_args()
+    plotting.apply_style()
+    if args.action == 'analyze':
+        analyze()
+    plot(metrics.shown(metrics.load_table('single_defect')))

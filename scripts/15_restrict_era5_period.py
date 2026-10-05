@@ -92,7 +92,7 @@ def check_spinup() -> pd.DataFrame:
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument('--check', action='store_true', help='also measure the effect of the shorter spin-up')
-    parser.add_argument('--cells', nargs='+', help='cut only these cells, such as substeps-xadj__dt0030s')
+    parser.add_argument('--cells', nargs='+', help='cut only these cells, such as substeps-xadj__dt0060s')
     args = parser.parse_args()
     full = config.RESULTS / config.ERA5_FULL_SCENARIO
     for cell in sorted(full.iterdir()):

@@ -8,12 +8,15 @@ Analyze the ERA5 cells of the matrix period against the reference:
 - event windows of every river: peak, peak hour, largest and alternating departures from the reference
 - profiles of the event peak error along the main stems of the major tributaries
 
-Writes tables era5_annual_summary, era5_annual_by_class, era5_events_summary, era5_events_by_class, era5_profiles,
-era5_cost, era5_negative, and era5_reference_artifacts, and the era5 figures.
+``analyze`` writes tables era5_annual_summary, era5_annual_by_class, era5_events_summary, era5_events_by_class,
+era5_profiles, era5_cost, era5_negative, and era5_reference_artifacts from the routed cells, then draws. ``draw`` draws
+the era5 figures from those tables alone, at the steps of config.DT_ROUTING, so a step left out needs nothing analyzed
+or routed again.
 
-Run with the river-route environment:  ../river-route/.venv/bin/python scripts/10_analyze_era5.py
+Run with the river-route environment:  ../river-route/.venv/bin/python scripts/10_analyze_era5.py [analyze|draw]
 """
 
+import argparse
 import json
 
 import matplotlib.pyplot as plt
@@ -27,6 +30,10 @@ SCENARIO = config.ERA5_SCENARIO
 TREATMENTS = ('standard', 'substeps', 'substeps-xadj', 'subcycles', 'stabilized', 'inflate-k', 'merge')
 SAME_EVENT_HOURS = 72  # an annual peak more than this far from the reference peak is a different event
 MIN_PEAK = 0.1  # m3/s; rivers whose reference peak is smaller are left out of relative errors
+# the cells, the stems, and the event of the figure of peak error along the main stems
+PROFILE_CELLS = (('standard', 3600), ('substeps', 60), ('substeps-xadj', 60), ('subcycles', 3600), ('substeps', 3600))
+PROFILE_STEMS = ('Columbia', 'Snake', 'Willamette')
+PROFILE_EVENT = 'columbia-peak'
 
 
 def finished_cells() -> list[tuple[str, int]]:
@@ -268,8 +275,8 @@ def plot_profiles(profiles: pd.DataFrame, stems: tuple[str, ...], cells: tuple[t
     return
 
 
-if __name__ == '__main__':
-    plotting.apply_style()
+def analyze() -> None:
+    """Measure every routed cell against the reference and write the tables the figures are drawn from."""
     network = rr.Network(config.NETWORK_FILE)
     reference_cell = metrics.load_cell(SCENARIO, *config.REFERENCE)
     reference_stats = dict(np.load(reference_cell.directory / 'annual_stats.npz'))
@@ -289,7 +296,6 @@ if __name__ == '__main__':
     annual_summary = summarize_annual(annual, ['treatment', 'dt'])
     metrics.save_table(annual_summary, 'era5_annual_summary')
     metrics.save_table(summarize_annual(annual, ['treatment', 'dt', 'class']), 'era5_annual_by_class')
-    plot_annual(annual_summary)
     events = json.loads((config.INPUTS / 'events.json').read_text())
     event_frames = [event_errors(metrics.load_cell(SCENARIO, t, dt), reference_cell, river_classes(network, dt), e)
                     for t, dt in cells for e in events]
@@ -298,8 +304,26 @@ if __name__ == '__main__':
     metrics.save_table(summarize_events(event_rows, ['event', 'treatment', 'dt', 'class']), 'era5_events_by_class')
     profiles = pd.concat([stem_profiles(cells, reference_cell, e) for e in events], ignore_index=True)
     metrics.save_table(profiles, 'era5_profiles')
-    shown = tuple(c for c in (('standard', 3600), ('substeps', 60), ('substeps-xadj', 60), ('subcycles', 3600),
-                              ('substeps', 3600)) if c in cells)
-    plot_profiles(profiles[profiles['event'] == 'columbia-peak'], ('Columbia', 'Snake', 'Willamette'), shown)
     with pd.option_context('display.width', 250, 'display.max_columns', 40):
         print(annual_summary.round(4).to_string(index=False))
+    return
+
+
+def draw() -> None:
+    """Draw the era5 figures from the analysis tables, at the steps of config.DT_ROUTING."""
+    plot_annual(metrics.shown(metrics.load_table('era5_annual_summary')))
+    profiles = metrics.shown(metrics.load_table('era5_profiles'))
+    profiles = profiles[profiles['event'] == PROFILE_EVENT]
+    measured = set(zip(profiles['treatment'], profiles['dt']))
+    plot_profiles(profiles, PROFILE_STEMS, tuple(cell for cell in PROFILE_CELLS if cell in measured))
+    return
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser.add_argument('action', nargs='?', default='analyze', choices=('analyze', 'draw'))
+    args = parser.parse_args()
+    plotting.apply_style()
+    if args.action == 'analyze':
+        analyze()
+    draw()

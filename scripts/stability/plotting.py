@@ -57,12 +57,17 @@ HYDROFABRIC_COLORS = {
     'TDX-Hydro': '#2a78d6',
     'HydroRIVERS': '#1baf7a',
     'MERIT-Basins': '#eda100',
-    # slots 6 and 7; slot 2, orange, fails the normal-vision floor against MERIT-Basins
+    # slot 6; slot 2, orange, fails the normal-vision floor against MERIT-Basins
     'NHDPlus V2': '#008300',
-    'NHDPlus HR': '#4a3aa7',
+    # slot 7; slot 5, magenta, falls in the colorblind floor band against HydroRIVERS
+    'GRIT': '#4a3aa7',
+    # slot 8, in the colorblind floor band against HydroRIVERS (deutan 6.9), so the markers carry identity too
+    'HydroSHEDS v2': '#e34948',
 }
 # and one marker, so a hydrofabric is never told by color alone
-HYDROFABRIC_MARKERS = {'TDX-Hydro': 'o', 'HydroRIVERS': '^', 'MERIT-Basins': 'D', 'NHDPlus V2': 'v', 'NHDPlus HR': 's'}
+HYDROFABRIC_MARKERS = {
+    'TDX-Hydro': 'o', 'HydroRIVERS': '^', 'MERIT-Basins': 'D', 'NHDPlus V2': 'v', 'GRIT': 's', 'HydroSHEDS v2': 'P',
+}
 DT_RAMP = ('#86b6ef', '#3987e5', '#1c5cab', '#0d366b')  # light to dark, for up to four time steps
 
 
@@ -105,7 +110,7 @@ def save(figure: plt.Figure, name: str) -> None:
 
 
 def step_label(seconds: int) -> str:
-    """A routing time step as an axis labels it: 30 s, 5 min, 1 h."""
+    """A routing time step as an axis labels it: 1 min, 5 min, 1 h."""
     if seconds <= 0:
         raise ValueError('steps are positive')
     if seconds < 60:

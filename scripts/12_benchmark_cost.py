@@ -7,12 +7,14 @@ at one thread and at eight, keeping the fastest of REPEATS runs. The cost is rep
 year and as reach-steps per simulated hour, the work the treatment implies.
 
 Run after the matrix, with nothing else running:
-    ../river-route/.venv/bin/python scripts/12_benchmark_cost.py
+    ../river-route/.venv/bin/python scripts/12_benchmark_cost.py [analyze|draw]
 
-Writes tables/cost_benchmark.csv and figures cost_benchmark and cost_tradeoff (which reads the synthetic and ERA5
-summary tables, so run it after scripts 08 and 10).
+``analyze`` times every cell and writes tables/cost_benchmark.csv, then draws. ``draw`` draws figures cost_benchmark
+and cost_tradeoff (which reads the synthetic and ERA5 summary tables of scripts 08 and 10) from the tables alone, at
+the steps of config.DT_ROUTING, so a step left out needs nothing timed or routed again.
 """
 
+import argparse
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -94,7 +96,7 @@ def plot_tradeoff(costs: pd.DataFrame) -> None:
     figure, axes = plt.subplots(1, 2, figsize=(plotting.WIDTH, 4.0))
     timing = costs[costs['threads'] == max(THREADS)][['treatment', 'dt', 'seconds_per_simulated_year']]
     for axis, (table, scenario, label) in zip(axes, errors, strict=True):
-        summary = pd.read_csv(config.TABLES / f'{table}.csv')
+        summary = metrics.shown(metrics.load_table(table))
         if scenario is not None:
             summary = summary[summary['scenario'] == scenario]
         joined = summary.merge(timing, on=['treatment', 'dt'])
@@ -115,8 +117,8 @@ def plot_tradeoff(costs: pd.DataFrame) -> None:
     return
 
 
-if __name__ == '__main__':
-    plotting.apply_style()
+def analyze() -> None:
+    """Time every cell of the matrix and write the table the figures are drawn from."""
     network_table = pd.read_parquet(config.NETWORK_FILE)
     month = next(forcing.era5_chunks(forcing.era5_files(MONTH, MONTH), network_table['riverId'].to_numpy()))
     month = [month, month]
@@ -132,5 +134,16 @@ if __name__ == '__main__':
         chosen = benchmark['threads'] == count
         benchmark.loc[chosen, 'time_vs_standard_1h'] = benchmark.loc[chosen, 'seconds_per_simulated_year'] / base
     metrics.save_table(benchmark, 'cost_benchmark')
-    plot(benchmark)
-    plot_tradeoff(benchmark)
+    return
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser.add_argument('action', nargs='?', default='analyze', choices=('analyze', 'draw'))
+    args = parser.parse_args()
+    plotting.apply_style()
+    if args.action == 'analyze':
+        analyze()
+    costs = metrics.shown(metrics.load_table('cost_benchmark'))
+    plot(costs)
+    plot_tradeoff(costs)
