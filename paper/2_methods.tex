@@ -41,11 +41,14 @@ $\Delta t$ must be less than $2k$.
     \label{eq:validity-conditions}
 \end{gather}
 
-%    todo: illustrate mathematically how invalid parameterization causes 2 types of errors:
-%    todo: 1) negative flows and possibly oscillations,
-%    todo: 2) attenuation of the flood wave.
-%    todo: Show how the Courant number is related to the validity conditions and how it can be used to determine if simulation is valid or not.
-%    todo: paragraph about stability and validity relating to the Courant number, 3 coefficients dt, k, x, and dx
+The two primary cases where negative coefficients are created are first $k > \Delta t$ causing $c_1$ to be negative, and second when $\Delta t > k$
+causing $c_3$ to be negative. When $c_1$ is negative, the inflow at the next time step $I_{t+1}$ is subtracted from the outflow $Q_{t+1}$. This is
+incorrect because larger inflows should produce larger outflows given the assumptions of wedge and prism storage in Muskingum routing. This phenomenon
+is documented in % todo: add citations.
+When $c_3$ is negative, the outflow at the previous time step $Q_t$ is subtracted from the outflow at the next time step $Q_{t+1}$.
+A negative $c_3$ can produce negative discharge on $Q_{t+1}$ if $Q_t$ is larger than the inflow terms $I_{t+1}$ and $I_t$. Subsequent time steps then
+weight the negative $Q_{t}$ with negative $c_3$ switching back to a positive $Q_{t+1}$. The oscillation dampens over time because the solution is
+stable. Oscillating flow has been documented in % todo: add citations.
 
 \subsection{Analysis of Global Hydrography Products}
 \label{subsec:analysis-hydrography-products}
@@ -78,7 +81,6 @@ products.
                                     Reaches                  & 8,477,883   & 20,990,675    & 2,939,408    & 2,667,754  & 15,940,505 & 1,767,065 \\
                                     Outlets                  & 156,162     & 152,396       & 62,266       & 14,595     & 170,559    & 38,858    \\
                                     Total length ($10^6$~km) & 35.8        & 35.4          & 27.4         & 5.15       & 59.8       & 19.7      \\
-                                    Highest Strahler order   & 10          & 11            & 9            & 10         & 10         & 9         \\
                                     Reaches of zero length   & 0           & 0             & 302          & 0          & 5,477      & 0         \\
                                     \midrule
                                     \multicolumn{7}{@{}l}{Reach length (km)} \\
@@ -90,7 +92,6 @@ products.
                                     \quad 99th percentile    & 20.4        & 7.22          & 42.9         & 9.01       & 16.9       & 57.0      \\
                                     \midrule
                                     \multicolumn{7}{@{}l}{Share of reaches (\%)} \\
-                                    \quad First order        & 51.5        & 50.4          & 51.1         & 50.7       & 50.5       & 49.4      \\
                                     \quad Shorter than 100~m & $<$0.1      & 2.2           & 0.2          & 5.7        & 1.4        & 0.5       \\
                                     \quad Shorter than 1~km  & 13.3        & 40.1          & 6.0          & 37.4       & 18.4       & 10.9      \\
                                     \quad Longer than 10~km  & 7.4         & 0.3           & 33.6         & 0.7        & 5.6        & 39.7      \\
@@ -137,9 +138,15 @@ River basin \citep{david2015}, and a 3-hour time step globally for GRADES \citep
 \label{subsec:mitigation-strategies}
 
 %    todo: now talk about the mitigation strategies
+%    todo: Show how the Courant number is related to the validity conditions and how it can be used to determine if simulation is valid or not.
+%    todo: paragraph about stability and validity relating to the Courant number, 3 coefficients dt, k, x, and dx
 
 \subsection{Analysis of Existing Routing Code Implementations}
 \label{subsec:analysis-of-routing-code}
+
+This article analyzes Muskingum implementations of WRF-Hydro as extracted in t-route \citep{troute_code} and RAPID \citep{david2011}.
+and the other analysis of this paper provide the analytical basis for creating the river-route implementation intended for future
+RFS models.
 
 \subsection{Efficient Computational Implementations}
 \label{subsec:efficient-computational-implementations}
