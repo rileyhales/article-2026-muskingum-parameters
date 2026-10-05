@@ -142,12 +142,13 @@ def label_steps(axis: plt.Axes, size: float) -> None:
     return
 
 
-def plot(rows: pd.DataFrame, title: str, name: str, top: float) -> None:
-    """One histogram, with the marked steps labeled above it, saved as the figure of the name."""
+def plot(rows: pd.DataFrame, title: str | None, name: str, top: float) -> None:
+    """One histogram, with the marked steps labeled above it and the title if any, saved as the figure of the name."""
     figure, axis = plt.subplots()
     bars(axis, rows, top)
     label_steps(axis, plotting.LEGEND_FONT_SIZE)
-    axis.set_title(title)
+    if title is not None:
+        axis.set_title(title)
     axis.set_xlabel('Routing time step Δt (s)')
     axis.set_ylabel('Share of reaches (%)')
     plotting.save(figure, name)
@@ -194,7 +195,8 @@ def draw() -> None:
     base = table[(table['velocity_m_s'] == VELOCITY) & (table['x'] == X)]
     top = share_top(base)
     for name in names:
-        plot(base[base['hydrofabric'] == name], name, f'{TABLE}_{name.lower().replace(" ", "-")}', top)
+        title = None if name == COMBINED else name  # the combined figure goes in the paper, whose caption names it
+        plot(base[base['hydrofabric'] == name], title, f'{TABLE}_{name.lower().replace(" ", "-")}', top)
     combined = table[table['hydrofabric'] == COMBINED]
     plot_grid(combined, share_top(combined))
     return

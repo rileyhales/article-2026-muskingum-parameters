@@ -23,8 +23,7 @@ the simulation, rather than statically assigned which represented base condition
 Various code implementations of these ideas adapt these concepts in different ways based on the model's needs and the data available. For
 instance, it's common to use regression or generalized relationships to substitute for stage and discharge gauges
 \citep{leopold1953, blackburnlynch2017, heldmyer2022}, bathymetry surveys \citep{andreadis2013, mersel2013, neal2021}, and high resolution
-cross-sections \citep{bieger2015, zheng2018, read2023} when estimating the Muskingum parameters. An attractive quality of Muskingum for large
-domain models is the lower computation complexity time and its lower dependence on high resolution cross-sections and bathymetry estimations.
+cross-sections \citep{bieger2015, zheng2018, read2023} when estimating the Muskingum parameters.
 
 The conditions for a stable and valid Muskingum simulation are not enforced by all code implementations; a problem made worse when using modern
 vector hydrography products which often prioritize having higher stream segment density. In the hydrology routing case, higher density of segments

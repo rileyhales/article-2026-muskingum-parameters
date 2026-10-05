@@ -1,6 +1,82 @@
 \subsection{Analysis of Hydrography Products}
 \label{subsec:results-analysis-muskingum-parameters}
 
+Table~\ref{tab:hydrography-properties} summarizes some key properties of the hydrographies. A trend providing some evidence that modern hydrography
+products favor higher stream density is the increase in total stream length. HydroSHEDS v2 has nearly the same total length of river reaches in only
+North and South America as HydroRIVERS globally. Figure~\ref{fig:hydrography-travel-times} shows the cumulative distribution of reach travel times in
+the hydrography products.
+
+\afterpage{
+    \begin{landscape}
+        \begin{table}
+            \centering
+            \caption{Properties of global hydrography products as published.}
+            \label{tab:hydrography-properties}
+            \begin{tabular*}{\linewidth}{@{\extracolsep{\fill}}lrrrrrr}
+                                    \toprule
+                                    & HydroRIVERS & HydroSHEDS~v2 & MERIT-Basins & NHDPlus~V2 & TDX-Hydro  & GRIT      \\
+                                    \midrule
+                                    Year published           & 2019        & 2026          & 2019         & 2012       & 2023       & 2025      \\
+                                    Extent                   & Global      & Americas      & Global       & CONUS      & Global     & Global    \\
+                                    Source                   & SRTM        & TanDEM-X      & MERIT Hydro  & USGS 3DEP  & TanDEM-X   & FABDEM    \\
+                                    Resolution (m)           & $\sim$460   & $\sim$12      & $\sim$90     & $\sim$10   & $\sim$12   & $\sim$30  \\
+                                    \midrule
+                                    Reaches                  & 8,477,883   & 20,990,675    & 2,939,408    & 2,667,754  & 15,940,505 & 1,767,065 \\
+                                    Outlets                  & 156,162     & 152,396       & 62,266       & 14,595     & 170,559    & 38,858    \\
+                                    Total length ($10^6$~km) & 35.8        & 35.4          & 27.4         & 5.15       & 59.8       & 19.7      \\
+                                    Reaches of zero length   & 0           & 0             & 302          & 0          & 5,477      & 0         \\
+                                    \midrule
+                                    \multicolumn{7}{@{}l}{Reach length (km)} \\
+                                    \quad Mean               & 4.23        & 1.69          & 9.33         & 1.93       & 3.75       & 11.1      \\
+                                    \quad 1st percentile     & 0.46        & 0.061         & 0.261        & 0.025      & 0.0755     & 0.157     \\
+                                    \quad 10th percentile    & 0.86        & 0.299         & 1.51         & 0.18       & 0.574      & 0.924     \\
+                                    \quad Median             & 2.96        & 1.27          & 6.83         & 1.54       & 2.76       & 7.38      \\
+                                    \quad 90th percentile    & 8.77        & 3.52          & 19.8         & 4.12       & 7.99       & 25.8      \\
+                                    \quad 99th percentile    & 20.4        & 7.22          & 42.9         & 9.01       & 16.9       & 57.0      \\
+                                    \midrule
+                                    \multicolumn{7}{@{}l}{Share of reaches (\%)} \\
+                                    \quad Shorter than 100~m & $<$0.1      & 2.2           & 0.2          & 5.7        & 1.4        & 0.5       \\
+                                    \quad Shorter than 1~km  & 13.3        & 40.1          & 6.0          & 37.4       & 18.4       & 10.9      \\
+                                    \quad Longer than 10~km  & 7.4         & 0.3           & 33.6         & 0.7        & 5.6        & 39.7      \\
+                                    \bottomrule
+            \end{tabular*}
+        \end{table}
+    \end{landscape}
+}
+
+Figure~\ref{fig:hydrography-travel-times} shows the cumulative distribution of reach lengths as equivalent travel times, $k$,
+in the hydrography products. The travel time is calculated as $k = Length / velocity$ assuming constant 0.5 m/s velocity. Across all datasets,
+the length of reaches spans multiple orders of magnitude. The median reach length spans around 1.3~km in HydroSHEDS v2 to 7.4~km in GRIT. The
+analogous travel time given the assumed velocity is equivalently around 43 minutes to 4.1 hours. The combined distribution is used as representative
+of trends that apply to individual datasets. An equivalent figure for each dataset individually is provided in the appendix section~
+\ref{sec:appendix-hydrography-results}.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics{../figures/hydrofabric_census_distributions}
+    \caption{Cumulative distribution of reach travel times in the hydrography products.}
+    \label{fig:hydrography-travel-times}
+\end{figure}
+
+The histogram is made combining the estimated travel times shown in Figure~\ref{fig:hydrography-travel-times} with the validity conditions in
+Equation~\ref{eq:validity-conditions}. The $\Delta t$ bins are on the x-axis with the same assumed constant velocity of 0.5 m/s and the
+corresponding $x = 0.25$. Figure~\ref{fig:dt_window_histogram} contains a histogram of the relative percentage of rivers across datasets which has
+all positive Muskingum coefficients for a given $\Delta t$. The $\Delta t$ which is valid for the largest percentage of rivers is around 1 hour.
+These findings are incompatible with the common practice assuming that smaller time steps correlates with more accurate results. The NWM uses a
+5-minute time step \citep{read2023}, GRADES-hydroDL uses a 30-minute time step \citep{yang2025}, RFS used a 15-minute time step \citep{hales2022}.
+Various published modeling studies using RAPID have used 15-minute time steps in the San Antonio and Guadalupe basins of Texas using the NHDPlus
+\citep{david2011, emery2020} and the western United States \citep{david2019}, 30-minute time steps in France \citep{david2011hp} and the Mississippi
+River basin \citep{david2015}, and a 3-hour time step globally for GRADES \citep{lin2019}.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics{../figures/dt_window_histogram_combined}
+    \caption{Cumulative distribution of reach travel times in the hydrography products.}
+    \label{fig:dt_window_histogram}
+\end{figure}
+
+% todo where are the particularly long and short reaches at the end distribution and how resolvable
+
 \subsection{Significance of Errors Introduced by Invalid Muskingum Parameters}
 \label{subsec:results-significance-of-errors}
 
