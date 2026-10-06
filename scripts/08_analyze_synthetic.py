@@ -7,7 +7,7 @@ the reference rise of each river, its peak less its steady baseflow, so a headwa
 hydrographs of the example rivers) from the routed cells, then draws. ``draw`` draws the synthetic figures from those
 tables alone, showing the steps of config.DT_ROUTING, so a step left out needs nothing analyzed or routed again.
 
-Run with the river-route environment:  ../river-route/.venv/bin/python scripts/08_analyze_synthetic.py [analyze|draw]
+Run with the project environment:  uv run python scripts/08_analyze_synthetic.py [analyze|draw]
 """
 
 import argparse

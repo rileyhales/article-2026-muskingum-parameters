@@ -3,7 +3,7 @@ Aggregate the hourly ERA5 runoff of 2000 through 2019, and the months of spin-up
 catchments once, as monthly catchment runoff volume files in the schema river-route's CatchmentRunoff reads, so every
 simulation of the matrix reads the same forcing.
 
-Run with the river-route environment:  ../river-route/.venv/bin/python scripts/02_aggregate_era5.py
+Run with the project environment:  uv run python scripts/02_aggregate_era5.py
 """
 
 from concurrent.futures import ThreadPoolExecutor

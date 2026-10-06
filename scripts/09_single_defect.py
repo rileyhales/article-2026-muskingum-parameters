@@ -15,7 +15,7 @@ adjusted, and every other river whole: the difference is what treating that one 
 then draws. ``draw`` draws figure single_defect from that table alone, at the steps of config.DT_ROUTING, so a step
 left out needs nothing routed again.
 
-Run with the river-route environment:  ../river-route/.venv/bin/python scripts/09_single_defect.py [analyze|draw]
+Run with the project environment:  uv run python scripts/09_single_defect.py [analyze|draw]
 """
 
 import argparse

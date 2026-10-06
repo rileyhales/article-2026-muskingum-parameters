@@ -1,61 +1,75 @@
 \subsection{Analysis of Muskingum Parameters}
 \label{subsec:analysis-muskingum-parameters}
 
-The Muskingum equation is given in Equation~\ref{eq:muskingum} \citep{usace_hms} where $Q$ and $I$ are channel flows in cubic meters per second
-at the indicated time step and river reach. The coefficients are given in Equations~\ref{eq:c1},~\ref{eq:c2}, and~\ref{eq:c3}. The Muskingum
-equation's three coefficients, $c_1$, $c_2$, and $c_3$, are functions of the Muskingum parameters $k$ and $x$, and the time step $\Delta t$. The
-Muskingum equation is stable, meaning that errors are not generated or amplified by the equation, for any $x$ between 0.0 and 0.5
-\citep{mccarthy1938}. Valid values of $k$ and $\Delta t$ are positive numbers.
+The Muskingum equation is given in Equation~\ref{eq:muskingum} \citep{usace_hms}.
+$Q$ and $I$ are channel flows in cubic meters per second at the indicated time step and river reach.
+The three coefficients, $c_1$, $c_2$, and $c_3$ are provided in are given in Equations~\ref{eq:c1},~\ref{eq:c2}, and~\ref{eq:c3}.
+The coefficients are functions of the $k$ and $x$ parameters and the computation time step $\Delta t$.
+Muskingum is stable, meaning that errors are not generated or amplified by the equation, for any $x$ between 0.0 and 0.5 \citep{mccarthy1938}.
+Valid values of $k$ and $\Delta t$ are positive numbers.
 
 \begin{equation}
-    Q_{t+1} = c_1\, I_{t+1} + c_2\, I_t + c_3\, Q_t
-    \label{eq:muskingum}
+  Q_{t+1} = c_1\, I_{t+1} + c_2\, I_t + c_3\, Q_t
+  \label{eq:muskingum}
 \end{equation}
 
 \begin{equation}
-    c_1 = \frac{\Delta t / k - 2x}{\Delta t / k + 2 (1-x)}
-    \label{eq:c1}
+  c_1 = \frac{\Delta t / k - 2x}{\Delta t / k + 2 (1-x)}
+  \label{eq:c1}
 \end{equation}
 
 \begin{equation}
-    c_2 = \frac{\Delta t / k + 2x}{\Delta t / k + 2 (1-x)}
-    \label{eq:c2}
+  c_2 = \frac{\Delta t / k + 2x}{\Delta t / k + 2 (1-x)}
+  \label{eq:c2}
 \end{equation}
 
 \begin{equation}
-    c_3 = \frac{2 (1-x) - \Delta t / k}{\Delta t / k + 2 (1-x)}
-    \label{eq:c3}
+  c_3 = \frac{2 (1-x) - \Delta t / k}{\Delta t / k + 2 (1-x)}
+  \label{eq:c3}
 \end{equation}
 
-Muskingum only produces physically valid results when the coefficients are positive \citep{hjelmfelt1985, chow1988, gill1992}. These conditions
-are summarized in Equation~\ref{eq:validity-conditions}. The three coefficients share a common denominator which is positive for all valid values
-of $k$, $x$, and $\Delta t$. The numerator of $c_2$ is always positive for valid parameter values reducing the validity condition to values which
-produce positive numerators of $c_1$ and $c_3$. The validity condition is summarized in Equation~\ref{eq:validity-conditions}. When $x$is at the
-maximum of 0.5, meaning no attenuation, $\Delta t$ and $k$ must be set equal. When $x$ is at the minimum of 0.0, meaning maximum attenuation,
-$\Delta t$ must be less than $2k$.
+Though the equation is numerically stable, invalid combinations of $k$, $x$, and $\Delta t$ can produces physically valid results.
+The source of the errors come from having negative coefficients \citep{hjelmfelt1985, chow1988, gill1992}.
+Valid ranges of coefficients are described by the inequalities in Equation~\ref{eq:validity-conditions}.
+The three coefficients share a common denominator which is positive for all valid values of $k$, $x$, and $\Delta t$.
+The numerator of $c_2$ is always positive reducing the validity condition to values which produce positive numerators of $c_1$ and $c_3$.
+When $x$is at the maximum of 0.5, meaning no attenuation, $\Delta t$ and $k$ must be set equal.
+When $x$ is at the minimum of 0.0, meaning maximum attenuation, $\Delta t$ must be less than $2k$.
 
 \begin{gather}
-    c1: \Delta t > 2 k x \notag \\
-    c3: \Delta t < 2 k (1-x) \notag \\
-    2 k x < \Delta t < 2 k (1-x)
-    \label{eq:validity-conditions}
+  c1: \Delta t >= 2 k x \notag \\
+  c3: \Delta t <= 2 k (1-x) \notag \\
+  2 k x <= \Delta t <= 2 k (1-x)
+  \label{eq:validity-conditions}
 \end{gather}
 
-The two primary cases where negative coefficients are created are first $k > \Delta t$ causing $c_1$ to be negative, and second when $\Delta t > k$
-causing $c_3$ to be negative. When $c_1$ is negative, the inflow at the next time step $I_{t+1}$ is subtracted from the outflow $Q_{t+1}$. This is
-incorrect because larger inflows should produce larger outflows given the assumptions of wedge and prism storage in Muskingum routing. This phenomenon
-is documented in % todo: add citations.
-When $c_3$ is negative, the outflow at the previous time step $Q_t$ is subtracted from the outflow at the next time step $Q_{t+1}$.
-A negative $c_3$ can produce negative discharge on $Q_{t+1}$ if $Q_t$ is larger than the inflow terms $I_{t+1}$ and $I_t$. Subsequent time steps then
-weight the negative $Q_{t}$ with negative $c_3$ switching back to a positive $Q_{t+1}$. The oscillation dampens over time because the solution is
-stable. Oscillating flow has been documented in % todo: add citations.
-
-\subsection{Mitigation Strategies for Invalid Parameterization}
+\subsection{Mitigation Strategies for Invalid Parameterizations}
 \label{subsec:mitigation-strategies}
 
-%    todo: now talk about the mitigation strategies
-%    todo: Show how the Courant number is related to the validity conditions and how it can be used to determine if simulation is valid or not.
-%    todo: paragraph about stability and validity relating to the Courant number, 3 coefficients dt, k, x, and dx
+The first case of negative coefficients is when $c_1$ is negative meaning that $k > \Delta t$.
+In terms of the river segment, the flood wave travel time and analagous reach length is too large relative to the time step.
+The inflow at the next time step $I_{t+1}$ is subtracted from the outflow $Q_{t+1}$ in this case which is physically incorrect.
+Larger inflows should produce larger outflows after some travel time lag and attenuation according to Muskingum's wedge and prism storage model.
+This phenomenon is documented in. % todo: add citations.
+
+One solution is to reduce the length of the river.
+The river could be edited in the source GIS data by splitting the segment and catchment area into two or more subunits creating more segments with shorter lengths.
+Alternatively, the same result can be achieved by dividing the river synthetically during the computation process.
+That process is an adaptation of the Muskingum Cunge process where river discharge is calculated at incremental $\Delta x$ distances along the reach. % todo add citation
+Rivers that are on the long end of the length distribution should be analyzed to for this condition.
+
+The second condition of negative coefficients is when $c_3$ is negative meaning that $k < \Delta t$.
+When $c_3$ is negative, the outflow at the previous time step $Q_t$ is subtracted from the outflow at the next time step $Q_{t+1}$.
+A negative $c_3$ can produce negative discharge on $Q_{t+1}$ if $Q_t$ is larger than the inflow terms $I_{t+1}$ and $I_t$.
+Subsequent time steps then weight the negative $Q_{t}$ with negative $c_3$ switching back to a positive $Q_{t+1}$.
+The oscillation dampens over time because the solution is numerically stable. % todo: add citations.
+
+A solution to this problem is to decrease the computational time step $\Delta t$.
+Modelers may hesitate to decrease $\Delta t$ because code implementations only allow a single time step for all rivers.
+The number of compute cycles increases inversely proportional with $\Delta t$ such that decreasing $\Delta t$ to $1 / n$ of its original multiplies the total compute by a factor of $n$.
+Cutting the time step by half causes twice the number of compute cycles on every river, decreasing to a quarter means four times the number of compute cycles, and so on.
+Rivers on the shortest end of the length distribution should be analyzed for this condition.
+Addiitionally, the code implementation of Muskingum may need to allow for decreased $\Delta t$ at some rivers sufficiently address this condition without multiplying the compute costs.
 
 \subsection{Analysis of Global Hydrography Products}
 \label{subsec:analysis-hydrography-products}
@@ -67,14 +81,30 @@ datasets, HydroSHEDS v2, TDX-Hydro, and GRIT, are derived from the 12-meter TanD
 TanDEM-X. Two, HydroRIVERS and MERIT-Basins, ultimately derive from the 90-meter SRTM elevations. NHDPlus~v2 comes from USGS 3DEP elevation data which
 is the only non-global elevation product represented.
 
-Streams were analyzed primarily for the distribution of their reach lengths and their $k$ parameters, calculated as $k = Length / velocity$ assuming
-constant 0.5 m/s velocity. Using a fixed velocity for all streams keeps the distribution of $k$ identical to the distribution of lengths and functions
-as a unit converter. The baseline speed of 0.5 m/s is used a reasonable starting point for exploration and should be interpreted or conflated with
-actual velocity distributions or calibrated velocities.
+To assess the distribution of stream reaches, we calculate $k = L / c$ assuming a flood wave celerity of 1~m/s.
+The wave celerity assumption is for exploratory purposes labeling streams in units applicable to the validity conditions in Equation~\ref{eq:validity-conditions}.
+Each dataset provided a length attribute, either in meters or kilometers.
+There were 23,585 lines of NHDPlus~V2, which trace the shoreline rather than a channel which we ignored.
+GRIT traces bifurcations in rivers but we only analyzed those marked as the primary channel
 
-\subsection{Analysis of Existing Routing Code Implementations}
+Streams were analyzed primarily for the distribution of their reach lengths and their $k$ parameters, calculated as assuming
+constant 1~m/s velocity. Using a fixed velocity for all streams keeps the distribution of $k$ identical to the distribution of lengths and functions
+as a unit converter.
+
+We apply a Courant condition to the analysis assisting in the assessment of interpretting the validity conditions in Equation~\ref{eq:validity-conditions}.
+%    todo: Show how the Courant number is related to the validity conditions and how it can be used to determine if simulation is valid or not.
+%    todo: paragraph about stability and validity relating to the Courant number, 3 coefficients dt, k, x, and dx
+
+\subsection{Analysis of Existing Routing Code Implementations and Test Watersheds}
 \label{subsec:analysis-of-routing-code}
 
 This article analyzes Muskingum implementations of WRF-Hydro as extracted in t-route \citep{troute_code} and RAPID \citep{david2011}.
-and the other analysis of this paper provide the analytical basis for creating the river-route implementation intended for future
-RFS models.
+These two are the used on several instances of large domain models fitting the profile described in Section~\ref{sec:introduction}.
+We acknowledge several other implementations of interest but are not as commonly used for the specific cases being explored in this article.
+One example is LISFLOOD \citep{vanderknijff2010} which uses kinematic wave routing on grids rather than vectors and is used for the European Flood Awareness System \citep{smith2016,matthews2025} and the Global Flood Awareness System \citep{alfieri2013, harrigan2020, prudhomme2024}.
+
+The purpose of the code review is to establish how these implementations handle negative coefficient cases.
+Some specific cases being looked for include determining if invalid cases are checked for, accepted by the algorithm, and if warnings at runtime or in documentation are given.
+Both implementations are written in Fortran.
+The authors are the lead developers or well experienced in both code bases.
+As an additional layer of analysis, we also applied static checking tools and AI code review tools to verify the findings.

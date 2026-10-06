@@ -5,7 +5,7 @@ and the Willamette, and the flashiest peak at the mouth of a smaller tributary, 
 median flow. Each window opens WINDOW_BEFORE days before its peak and closes WINDOW_AFTER days after it. The windows of
 data/inputs/events.json were chosen from the 2000-2019 reference and all fall within 2002-2011.
 
-Run with the river-route environment:  ../river-route/.venv/bin/python scripts/07_select_events.py
+Run with the project environment:  uv run python scripts/07_select_events.py
 """
 
 import json

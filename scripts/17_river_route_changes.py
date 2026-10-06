@@ -19,11 +19,12 @@ writes tables/river_route_changes.csv with the measures of the manuscript, which
 river_route_changes markers of the manuscript, and the figure river_route_changes, from those tables alone, at the steps
 of config.DT_ROUTING, so a step left out needs nothing analyzed or routed again.
 
-Run with the river-route environment (python is ../river-route/.venv/bin/python):
-    PYTHONPATH=vendor/river-route-matrix python scripts/17_river_route_changes.py run --code before --scenario era5-2002-2011
-    python scripts/17_river_route_changes.py run --code after --scenario synthetic-burst
-    python scripts/17_river_route_changes.py analyze
-    python scripts/17_river_route_changes.py draw
+Run with the project environment, which installs the before code; the after code is imported from its folder on
+PYTHONPATH:
+    uv run python scripts/17_river_route_changes.py run --code before --scenario era5-2002-2011
+    PYTHONPATH=../river-route uv run python scripts/17_river_route_changes.py run --code after --scenario synthetic-burst
+    uv run python scripts/17_river_route_changes.py analyze
+    uv run python scripts/17_river_route_changes.py draw
 """
 
 import argparse
@@ -73,8 +74,8 @@ def run(code: str, scenario: str, threads: int, force: bool) -> None:
     imported = engine.river_route_code()
     if imported != code:
         raise SystemExit(
-            f'river_route is the {imported} version, imported from {rr.__file__}; the before version needs '
-            f'PYTHONPATH={config.CODES["before"].relative_to(config.ROOT)}'
+            f'river_route is the {imported} version, imported from {rr.__file__}; the {code} version needs '
+            f'PYTHONPATH={config.CODES[code]}'
         )
     for treatment, dt in cells(code):
         run_matrix.run_cell(scenario, treatment, dt, threads, force, root=config.CHANGES / code)

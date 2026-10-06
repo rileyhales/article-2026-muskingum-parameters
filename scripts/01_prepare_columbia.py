@@ -2,7 +2,7 @@
 Subset the TDX-Hydro region holding the Columbia to the Columbia basin: its river-route network table, the stream
 metadata (length, Strahler order, contributing area, coordinates), and the ERA5 grid weight table.
 
-Run with the river-route environment:  ../river-route/.venv/bin/python scripts/01_prepare_columbia.py
+Run with the project environment:  uv run python scripts/01_prepare_columbia.py
 """
 
 

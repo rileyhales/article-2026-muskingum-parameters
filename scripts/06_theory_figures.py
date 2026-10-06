@@ -3,7 +3,7 @@ Figures of the theory section: the window of Δt / k with non-negative coefficie
 either side of it, the gain of each reach at the highest frequency a routing step can carry, and the travel time
 variance substeps keep or lose.
 
-Run with the river-route environment:  ../river-route/.venv/bin/python scripts/06_theory_figures.py
+Run with the project environment:  uv run python scripts/06_theory_figures.py
 """
 
 

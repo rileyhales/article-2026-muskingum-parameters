@@ -4,7 +4,7 @@ short) at each routing time step, where the short rivers sit in the topology, an
 the Columbia basin and every river of the global River Forecast System v3 hydrofabric. Their figures are drawn with
 the other hydrofabrics by 16_hydrofabric_census.py.
 
-Run with the river-route environment:  ../river-route/.venv/bin/python scripts/05_census.py
+Run with the project environment:  uv run python scripts/05_census.py
 """
 
 

@@ -9,7 +9,7 @@ column per step of config.DT_ROUTING, so a step left out needs nothing analyzed 
 marked with an ellipsis. The stabilized network at 1 min, which differs from the substeps network only in the four
 reaches too short at that step, was cut from the matrix and is marked b, as the table captions explain.
 
-Run with the river-route environment:  ../river-route/.venv/bin/python scripts/14_treatment_tables.py
+Run with the project environment:  uv run python scripts/14_treatment_tables.py
 """
 
 from pathlib import Path

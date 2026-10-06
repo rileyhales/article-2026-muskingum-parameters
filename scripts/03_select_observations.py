@@ -3,7 +3,7 @@ Choose the observation rivers whose whole hourly series every 20-year simulation
 the main stem of each major tributary of the Columbia, and the mouth of each. Every other river keeps annual
 statistics, and every river keeps its series inside the event windows.
 
-Run with the river-route environment:  ../river-route/.venv/bin/python scripts/03_select_observations.py
+Run with the project environment:  uv run python scripts/03_select_observations.py
 """
 
 

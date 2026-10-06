@@ -9,8 +9,8 @@ days around that value. It also tabulates every reach whose negative discharge e
 tables/era5_negative_flow_series.csv (the routed year of the example reach under every cell), then draws. ``draw``
 draws figure era5_negative_flow_example from those tables alone, so nothing is routed again to redraw it.
 
-Run with the river-route environment:
-    ../river-route/.venv/bin/python scripts/11_era5_negative_flow_example.py [analyze|draw]
+Run with the project environment:
+    uv run python scripts/11_era5_negative_flow_example.py [analyze|draw]
 """
 
 import argparse

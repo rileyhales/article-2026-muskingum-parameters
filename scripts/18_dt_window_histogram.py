@@ -2,14 +2,14 @@
 Histogram of the routing time steps at which the reaches of each hydrofabric have non-negative Muskingum coefficients.
 Every reach of every published hydrofabric of step 16 is given k = L / v with one celerity v and one x, so its window
 of steps is 2kx <= dt <= 2k(1 - x). A bin of steps counts every reach whose window holds any step of the bin, as a share
-of the reaches of the hydrofabric. At v = 0.5 m/s and x = 0.25, one figure is drawn per hydrofabric and one for the
-reaches of all of them together; the reaches of all of them together are drawn again at every pair of v = 0.5 ± 0.25
+of the reaches of the hydrofabric. At v = 1 m/s and x = 0.25, one figure is drawn per hydrofabric and one for the
+reaches of all of them together; the reaches of all of them together are drawn again at every pair of v = 1 ± 0.5
 m/s and x = 0.25 ± 0.15, in one figure of nine panels.
 
 ``analyze`` loads the hydrofabrics, writes tables/dt_window_histogram.csv with every hydrofabric at every pair, then
 draws. ``draw`` draws from that table alone.
 
-Run with the river-route environment:  ../river-route/.venv/bin/python scripts/18_dt_window_histogram.py
+Run with the project environment:  uv run python scripts/18_dt_window_histogram.py
 """
 
 import argparse
@@ -25,9 +25,9 @@ from stability import config, plotting
 
 hydrofabric_census = importlib.import_module('16_hydrofabric_census')
 
-VELOCITY = 0.5  # m/s: the celerity of every reach in the figures of each hydrofabric, so k = L / v
+VELOCITY = 1.0  # m/s: the flood wave celerity of every reach in the figures of each hydrofabric, so k = L / v
 X = 0.25  # the Muskingum x of every reach in those figures
-VELOCITIES = (0.25, 0.5, 0.75)  # m/s: 0.5 ± 0.25, the celerities of the figures of all hydrofabrics together
+VELOCITIES = (0.5, 1.0, 1.5)  # m/s: 1 ± 0.5, the celerities of the figures of all hydrofabrics together
 XS = (0.10, 0.25, 0.40)  # 0.25 ± 0.15, and their values of x
 DECADES = (0, 7)  # the bins span 10^0 to 10^7 s
 BINS_PER_DECADE = 10  # evenly spaced in log

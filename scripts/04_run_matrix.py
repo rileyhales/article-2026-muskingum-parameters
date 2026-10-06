@@ -8,9 +8,9 @@ Run cells of the simulation matrix: a forcing scenario, a treatment, and a routi
   observation rivers, and ``events/<name>.npy`` (river, hour) for every river inside each event window
 - synthetic scenarios: ``series.npy`` (river, hour) for every river
 
-Examples, with the river-route environment (python is ../river-route/.venv/bin/python):
-    python scripts/04_run_matrix.py --scenario era5-2002-2011 --treatment reference --dt 60
-    python scripts/04_run_matrix.py --scenario synthetic-burst --all
+Examples, with the project environment:
+    uv run python scripts/04_run_matrix.py --scenario era5-2002-2011 --treatment reference --dt 60
+    uv run python scripts/04_run_matrix.py --scenario synthetic-burst --all
 """
 
 import argparse

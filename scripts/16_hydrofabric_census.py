@@ -7,9 +7,10 @@ order, and x = 0.2, so the census compares how each segmentation places reach le
 independently of each model's own parameters. The figures show the hydrofabrics as published, not routing networks
 derived from them.
 
-Run with the river-route environment:  ../river-route/.venv/bin/python scripts/16_hydrofabric_census.py
+Run with the project environment:  uv run python scripts/16_hydrofabric_census.py
 """
 
+import itertools
 from collections.abc import Callable
 from pathlib import Path
 
@@ -38,7 +39,7 @@ QUANTILES = (0.01, 0.10, 0.50, 0.90, 0.99)  # of reach length and travel time
 SHORT_REACHES = (100, 1000)  # m: the lengths below which the property table counts reaches
 LONG_REACHES = (10000,)  # m: and above which
 K_STEPS = (300, 1800, 3600)  # the routing time steps the travel time figure marks at k = dt
-FIGURE_VELOCITY = 0.5  # m/s: the one celerity the travel time figure gives every reach, so its k is L / v
+FIGURE_VELOCITY = 1.0  # m/s: the one flood wave celerity the travel time figure gives every reach, so its k is L / v
 CLEAR_MARGIN = 4  # points: how far every curve must stay from the labels and legends of the figures
 
 
@@ -359,8 +360,8 @@ def plot_signs(signs: pd.DataFrame) -> None:
     return
 
 
-def require_clear(artist: plt.Artist, what: str, curves: dict[str, np.ndarray], share: np.ndarray) -> None:
-    """Raise if a curve of the distributions passes through a label or the legend."""
+def crossing_curve(artist: plt.Artist, curves: dict[str, np.ndarray], share: np.ndarray) -> str | None:
+    """The first curve of the distributions that passes through a label or the legend, None if every curve is clear."""
     axis = artist.axes
     axis.figure.canvas.draw()  # lay the figure out, so the artist has its final size in data units
     margin = CLEAR_MARGIN * axis.figure.dpi / 72  # pixels
@@ -368,8 +369,24 @@ def require_clear(artist: plt.Artist, what: str, curves: dict[str, np.ndarray], 
     # each curve rises monotonically, so across the artist it spans the shares at the artist's two ends
     for name, k in curves.items():
         if np.interp(box.x0, k, share) < box.y1 and np.interp(box.x1, k, share) > box.y0:
-            raise ValueError(f'{name} passes through {what}')
-    return
+            return name
+    return None
+
+
+def label_step(axis: plt.Axes, dt: int, curves: dict[str, np.ndarray], share: np.ndarray) -> None:
+    """Label a step beside its line, in the first of the places top left, top right, bottom left, and bottom right of
+    the line where every curve is clear of it."""
+    text = plotting.step_label(dt)
+    crossing = None
+    places = itertools.product(((97, 'top'), (3, 'bottom')), ((-4, 'right'), (4, 'left')))
+    for (y, vertical), (dx, horizontal) in places:
+        label = axis.annotate(text, (dt, y), xytext=(dx, 0), textcoords='offset points', rotation=90, ha=horizontal,
+                              va=vertical, color=plotting.MUTED)
+        crossing = crossing_curve(label, curves, share)
+        if crossing is None:
+            return
+        label.remove()
+    raise ValueError(f'{crossing} passes through the label {text} on every side of its line')
 
 
 def plot_distributions(curves: dict[str, np.ndarray]) -> None:
@@ -397,10 +414,10 @@ def plot_distributions(curves: dict[str, np.ndarray]) -> None:
     length.set_xlabel('Reach length (km)')
     for dt in K_STEPS:
         axis.axvline(dt, color=plotting.MUTED, linewidth=1, linestyle='--', zorder=1.5)
-        label = axis.annotate(plotting.step_label(dt), (dt, 97), xytext=(-4, 0), textcoords='offset points',
-                              rotation=90, ha='right', va='top', color=plotting.MUTED)
-        require_clear(label, f'the label {label.get_text()}', curves, share)
-    require_clear(axis.get_legend(), 'the legend', curves, share)
+        label_step(axis, dt, curves, share)
+    crossing = crossing_curve(axis.get_legend(), curves, share)
+    if crossing is not None:
+        raise ValueError(f'{crossing} passes through the legend')
     plotting.save(figure, 'hydrofabric_census_distributions')
     return
 

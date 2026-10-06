@@ -1,10 +1,10 @@
 \subsection{Analysis of Hydrography Products}
 \label{subsec:results-analysis-muskingum-parameters}
 
-Table~\ref{tab:hydrography-properties} summarizes some key properties of the hydrographies. A trend providing some evidence that modern hydrography
-products favor higher stream density is the increase in total stream length. HydroSHEDS v2 has nearly the same total length of river reaches in only
-North and South America as HydroRIVERS globally. Figure~\ref{fig:hydrography-travel-times} shows the cumulative distribution of reach travel times in
-the hydrography products.
+Table~\ref{tab:hydrography-properties} summarizes some key properties of the hydrographies.
+A trend providing some evidence that modern hydrography products favor higher stream density is the increase in total stream length.
+HydroSHEDS v2 has nearly the same total length of river reaches in only North and South America as HydroRIVERS globally.
+Figure~\ref{fig:hydrography-travel-times} shows the cumulative distribution of reach travel times in the hydrography products.
 
 \afterpage{
     \begin{landscape}
@@ -45,9 +45,9 @@ the hydrography products.
 }
 
 Figure~\ref{fig:hydrography-travel-times} shows the cumulative distribution of reach lengths as equivalent travel times, $k$,
-in the hydrography products. The travel time is calculated as $k = Length / velocity$ assuming constant 0.5 m/s velocity. Across all datasets,
+in the hydrography products. The travel time is calculated as $k = Length / velocity$ assuming constant 1~m/s velocity. Across all datasets,
 the length of reaches spans multiple orders of magnitude. The median reach length spans around 1.3~km in HydroSHEDS v2 to 7.4~km in GRIT. The
-analogous travel time given the assumed velocity is equivalently around 43 minutes to 4.1 hours. The combined distribution is used as representative
+analogous travel time given the assumed velocity is equivalently around 21 minutes to 2.0 hours. The combined distribution is used as representative
 of trends that apply to individual datasets. An equivalent figure for each dataset individually is provided in the appendix section~
 \ref{sec:appendix-hydrography-results}.
 
@@ -59,9 +59,9 @@ of trends that apply to individual datasets. An equivalent figure for each datas
 \end{figure}
 
 The histogram is made combining the estimated travel times shown in Figure~\ref{fig:hydrography-travel-times} with the validity conditions in
-Equation~\ref{eq:validity-conditions}. The $\Delta t$ bins are on the x-axis with the same assumed constant velocity of 0.5 m/s and the
+Equation~\ref{eq:validity-conditions}. The $\Delta t$ bins are on the x-axis with the same assumed constant velocity of 1~m/s and the
 corresponding $x = 0.25$. Figure~\ref{fig:dt_window_histogram} contains a histogram of the relative percentage of rivers across datasets which has
-all positive Muskingum coefficients for a given $\Delta t$. The $\Delta t$ which is valid for the largest percentage of rivers is around 1 hour.
+all positive Muskingum coefficients for a given $\Delta t$. The $\Delta t$ which is valid for the largest percentage of rivers is between 26 and 33 minutes.
 These findings are incompatible with the common practice assuming that smaller time steps correlates with more accurate results. The NWM uses a
 5-minute time step \citep{read2023}, GRADES-hydroDL uses a 30-minute time step \citep{yang2025}, RFS used a 15-minute time step \citep{hales2022}.
 Various published modeling studies using RAPID have used 15-minute time steps in the San Antonio and Guadalupe basins of Texas using the NHDPlus

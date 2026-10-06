@@ -4,9 +4,9 @@ routed both ways for each network type, must give identical discharge. Also repo
 stabilized network of the Router is the river-route treatment; with the river-route that routed the matrix, it must also
 be the stabilized treatment of the matrix, which the engine builds with its own substeps.
 
-Run with the river-route environment, for the river-route after this study and the one before it:
-    ../river-route/.venv/bin/python scripts/verify_engine.py
-    PYTHONPATH=vendor/river-route-matrix ../river-route/.venv/bin/python scripts/verify_engine.py
+Run with the project environment, for the river-route after this study and the one before it:
+    PYTHONPATH=../river-route uv run python scripts/verify_engine.py
+    uv run python scripts/verify_engine.py
 """
 
 from pathlib import Path

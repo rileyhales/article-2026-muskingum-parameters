@@ -8,8 +8,8 @@ For each finished cell of data/results/era5-2000-2019 without a counterpart in d
 writes the counterpart: annual statistics of the years 2002-2011, the observation series of those hours, the event
 windows (hard links, since every window lies inside the period), and meta.json noting the cell it was cut from.
 
-Run with the river-route environment:
-    ../river-route/.venv/bin/python scripts/15_restrict_era5_period.py [--check]
+Run with the project environment:
+    uv run python scripts/15_restrict_era5_period.py [--check]
 """
 
 import argparse

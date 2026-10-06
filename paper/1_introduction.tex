@@ -1,46 +1,37 @@
-Many hydrology models currently exist which simulate river routing, using physical equations, in an operational context, and covering continental
-or larger domains. There are many valid methods for creating a modeling system matching these characteristics. The focus of this paper will be on
-those characterized by using 1) a vector streams and catchments hydrography product base, 2) joined to a land surface model providing time
-series runoff,and 3) applying river routing using an implementation of the Muskingum equation. Examples and citations are explored in the
-remainder of this section. Alternative modeling methods include LISFLOOD \citep{vanderknijff2010} which uses kinematic wave routing on grids
-rather than vectors and is operational on large domains models; namely the European Flood Awareness System \citep{smith2016,matthews2025}
-and the Global Flood Awareness System \citep{alfieri2013, harrigan2020, prudhomme2024}.
+Many hydrology models exist which simulate river routing covering continental or larger domains.
+There are many valid methods for creating a modeling system matching these characteristics.
+The focus of this paper will be on those characterized by using 1) a vector streams and catchments hydrography product base, 2) joined to a land
+surface model providing time series runoff,and 3) applying river routing using an implementation of the Muskingum equation.
+Three examples of large scale models fitting the described pattern include the United States National Water Model (NWM), the GRADES-hydroDL (Global
+Reach-scale A priori Discharge Estimates for SWOT) model, and the GEOGLOWS River Forecast System (RFS).
 
-Three examples of large scale models fitting the described pattern include the United States National Water Model (NWM), the GRADES-hydroDL (
-Global Reach-scale A priori Discharge Estimates for SWOT) model, and the GEOGLOWS River Forecast System (RFS). The NWM's streams stem from the
-NHDPlus High Resolution dataset, runoff from a WRF-Hydro model \citep{gochis2020, read2023, cosgrove2024} using the t-route \citep{troute_code}
-Fortran implementation. GRADES uses the MERIT Hydro reaches \citep{lin2019, yamazaki2019} coupled to a hydroDL \citep{yang2025} model and
-routed using the RAPID (Routing Application for Parallel Computation of Discharge) Fortran implementation \citep{david2011}. RFS is based on a
-derivative of the TDX-Hydro streams \citep{carlson2024}, runoff from ECMWF reanalysis \citep{hersbach2020} and ensemble forecast products, also
-with the RAPID implementation.
+The NWM's streams stem from the NHDPlus High Resolution dataset, runoff from a WRF-Hydro model \citep{gochis2020, read2023, cosgrove2024}
+using the t-route \citep{troute_code} Fortran implementation.
+GRADES uses the MERIT Hydro reaches \citep{lin2019, yamazaki2019} coupled to a hydroDL \citep{yang2025}
+model and routed using the RAPID (Routing Application for Parallel Computation of Discharge) Fortran implementation \citep{david2011}.
+RFS builds on a derivative of the TDX-Hydro streams \citep{carlson2024}, runoff from ECMWF reanalysis \citep{hersbach2020}
+and ensemble forecast products, also with the RAPID implementation.
 
-Many articles provide the mathematical basis of the Muskingum method. Muskingum parameterizes each river with $k$, the travel time of a flood
-wave in seconds, and $x$, a dimensionless number between 0.0 and 0.5 which determines attenuation \citep{mccarthy1938, chow1988}. The
-Muskingum-Cunge publication \citep{cunge1969} describes estimating $k$ and $x$ from the river's physical and topographic characteristics using
-Manning's equation. \citet{ponce1978} presented the first basis for making $k$ and $x$ dynamic, being recalculated at each time step during
-the simulation, rather than statically assigned which represented base conditions and not necessarily the flood condition.
+Many articles provide the mathematical basis of the Muskingum method.
+Muskingum parameterizes each river with $k$, the travel time of a flood wave in seconds, and $x$, a dimensionless number between 0.0 and 0.5 which determines attenuation \citep{mccarthy1938, chow1988}.
+The Muskingum-Cunge publication \citep{cunge1969} describes estimating $k$ and $x$ from the river's physical and topographic characteristics.
+Many implementations of Muskingum-Cunge estimate parameters using Manning's equation <TODO: ADD CITATIONS>.
+\citet{ponce1978} presented the basis for dynamically setting $k$ and $x$ each time step rather than statically.
+Various code implementations of these ideas adapt these concepts in different ways based on the model's needs and the data available.
+For instance, it's common to use regression or generalized relationships to substitute for stage and discharge gauges \citep{leopold1953, blackburnlynch2017, heldmyer2022}, bathymetry surveys \citep{andreadis2013, mersel2013, neal2021}, and high resolution cross-sections \citep{bieger2015, zheng2018, read2023} when estimating the Muskingum parameters.
 
-Various code implementations of these ideas adapt these concepts in different ways based on the model's needs and the data available. For
-instance, it's common to use regression or generalized relationships to substitute for stage and discharge gauges
-\citep{leopold1953, blackburnlynch2017, heldmyer2022}, bathymetry surveys \citep{andreadis2013, mersel2013, neal2021}, and high resolution
-cross-sections \citep{bieger2015, zheng2018, read2023} when estimating the Muskingum parameters.
+The conditions for a stable and valid Muskingum simulation are not enforced by all code implementations.
+Unfortunately, several modern vector hydrography products which often prioritize having higher stream segment density.
+In the hydrology routing case, higher density of segments could leader to more difficulties setting valid parameters.
+Modelers often default to assuming a smaller time step is safer or more accurate, yet the significance of errors introduced in such cases is poorly understood and documented in the literature.
+This article shows the need for a better routing code and guidance using these methods on large domain models.
 
-The conditions for a stable and valid Muskingum simulation are not enforced by all code implementations; a problem made worse when using modern
-vector hydrography products which often prioritize having higher stream segment density. In the hydrology routing case, higher density of segments
-more readily facilitates violating the validity conditions rather than automatically increasing potential accuracy. The significance of errors
-introduced in such cases is poorly understood and documented in the literature. This article shows that many published model results and operational
-models using existing hydrography and routing code do not inherently create properly parameterized simulations. There is a need for a better
-documented understanding of how to avoid or mitigate these sources of error shown to exist in at least the three large domain models studied.
-
-The primary purpose of this paper is to assess inaccuracies introduced by poorly parameterized routing simulations.
-Where possible, the sources of error are characterized so they can be avoided or strategies are given to mitigate their effects.
-This paper is not concerned with any specific model's accuracy overall.
-This paper will not analyze forcing quality, gauge data, biases or broach topics of calibration and validation.
+The primary purpose of this paper is to determine how to properly apply Muskingum routing for large domain models and provide a new, compliant code.
+This paper uses three specific models as reference but is not concerned with the overall accuracy of any of them.
+This paper is not about analyzing forcings, calibration techniques, validation with gauge data, or model benchmarking.
+The sources of routing error are characterized mathematically, then assessed on a modern hydrography with reanalysis and synthetic runoff data.
 The analysis first explores a few continental or global level hydrography products and their potential to violate routing validity conditions.
-Solutions to these sources of errors are identified and tested in some representative examples.
 Some reference code implementations are assessed for their strategies to handle invalid parameterizations.
-The paper explores which are used in a few existing routing code implementations and the consequences of those decisions.
-The new code package, river-route, implements the controls and mitigations and is used to assess the significance of the possible error types.
-Secondarily, this paper assesses computational efficiency of the implementation; a serious concern for large domain models where computational
-requirements can become limiters on the modeling choices.
-The paper concludes with recommendations for future work and best practices for large domain hydrology models using Muskingum routing.
+A new code package, river-route, implements the controls and mitigations required to properly apply Muskingum routing.
+Analysis covers findings on computational efficiency of the implementation which is a serious concern for large domain models.
+The paper concludes providing best practices for large domain Muskingum routing and recommendations for future work.

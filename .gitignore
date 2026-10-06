@@ -6,3 +6,4 @@ hydrography/
 /paper-claude/build/
 figures/*.pdf
 vendor/
+.venv/

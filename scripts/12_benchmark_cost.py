@@ -7,7 +7,7 @@ at one thread and at eight, keeping the fastest of REPEATS runs. The cost is rep
 year and as reach-steps per simulated hour, the work the treatment implies.
 
 Run after the matrix, with nothing else running:
-    ../river-route/.venv/bin/python scripts/12_benchmark_cost.py [analyze|draw]
+    uv run python scripts/12_benchmark_cost.py [analyze|draw]
 
 ``analyze`` times every cell and writes tables/cost_benchmark.csv, then draws. ``draw`` draws figures cost_benchmark
 and cost_tradeoff (which reads the synthetic and ERA5 summary tables of scripts 08 and 10) from the tables alone, at

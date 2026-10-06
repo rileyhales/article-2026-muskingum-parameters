@@ -13,7 +13,7 @@ era5_profiles, era5_cost, era5_negative, and era5_reference_artifacts from the r
 the era5 figures from those tables alone, at the steps of config.DT_ROUTING, so a step left out needs nothing analyzed
 or routed again.
 
-Run with the river-route environment:  ../river-route/.venv/bin/python scripts/10_analyze_era5.py [analyze|draw]
+Run with the project environment:  uv run python scripts/10_analyze_era5.py [analyze|draw]
 """
 
 import argparse

@@ -4,7 +4,7 @@ observation reaches, and (b) every reach by the sign of its Muskingum coefficien
 line work is rasterized at the figure resolution, since tens of thousands of vector lines make a PDF of many
 megabytes, while the text stays vector.
 
-Run with the river-route environment:  ../river-route/.venv/bin/python scripts/13_study_area_map.py
+Run with the project environment:  uv run python scripts/13_study_area_map.py
 """
 
 

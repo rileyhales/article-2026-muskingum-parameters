@@ -32,7 +32,8 @@ HOURS_PER_YEAR = 8760
 def river_route_code() -> str:
     """
     Which river-route is imported: 'before', the code that routed the matrix, copied into vendor/river-route-matrix
-    and imported with that folder on PYTHONPATH, or 'after', ../river-route with the changes of this study.
+    and installed from that folder in the project environment, or 'after', ../river-route with the changes of this
+    study, imported with that folder on PYTHONPATH.
     """
     location = Path(river_route.__file__).resolve()
     found = [code for code, root in config.CODES.items() if root.resolve() in location.parents]
