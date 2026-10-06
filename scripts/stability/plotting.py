@@ -13,7 +13,8 @@ from matplotlib.layout_engine import TightLayoutEngine
 from . import config
 
 __all__ = [
-    'TREATMENT_COLORS', 'TREATMENT_LABELS', 'TREATMENT_MARKERS', 'HYDROFABRIC_COLORS', 'HYDROFABRIC_MARKERS', 'DT_RAMP', 'INK', 'MUTED',
+    'TREATMENT_COLORS', 'TREATMENT_LABELS', 'TREATMENT_MARKERS', 'HYDROFABRIC_COLORS', 'HYDROFABRIC_MARKERS', 'DT_RAMP',
+    'INK', 'MUTED',
     'GRID', 'SURFACE', 'WIDTH', 'FONT_SIZE', 'LEGEND_FONT_SIZE', 'apply_style', 'save', 'step_label',
     'step_positions', 'step_ticks',
 ]
@@ -102,7 +103,6 @@ def save(figure: plt.Figure, name: str) -> None:
         raise ValueError(f'{name} must use the tight layout of the style')
     config.FIGURES.mkdir(parents=True, exist_ok=True)
     figure.savefig(config.FIGURES / f'{name}.png')
-    figure.savefig(config.FIGURES / f'{name}.pdf')
     plt.close(figure)
     if not (config.FIGURES / f'{name}.png').exists():
         raise OSError(f'{name}.png was not written')
