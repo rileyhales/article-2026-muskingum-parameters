@@ -1,7 +1,4 @@
-% LaTeX copy of draft.md. Build from this folder with
 %   latexmk -pdf -outdir=build draft.tex
-% which writes build/draft.pdf and keeps the auxiliary files out of this folder.
-
 \documentclass[preprint,12pt,authoryear]{elsarticle}
 
 \usepackage{amsmath}
@@ -11,40 +8,12 @@
 \usepackage[margin=1in]{geometry}
 \usepackage{setspace}
 \usepackage[colorlinks=true, allcolors=blue]{hyperref}
-
 \setstretch{1.5}
-
 \journal{Environmental Modeling and Software}
 
 \begin{document}
-
-  \begin{frontmatter}
-
-    \title{Muskingum Routing Implementation and Parameterization for Large Domain Hydrology Models}
-
-    \author[a]{Riley Hales\corref{cor1}}
-    \cortext[cor1]{Corresponding author}
-    \affiliation[a]{organization={Brigham Young University}, city={Provo, Utah}, country={United States of America}}
-
-    \begin{highlights}
-      \item
-    \end{highlights}
-
-    \begin{abstract}
-
-    \end{abstract}
-
-    \begin{keyword}
-      Muskingum routing \sep
-      Muskingum-Cunge \sep
-      Global Hydrology Models \sep
-      River Forecast System \sep
-      river-route
-    \end{keyword}
-
-    \newpageafter{author}
-  \end{frontmatter}
-  \clearpage
+  \input{todo_list}
+  \input{0_front_matter}
 
 
   \section{Introduction}
@@ -78,5 +47,4 @@
 
   \bibliographystyle{elsarticle-harv}
   \bibliography{references}
-
 \end{document}

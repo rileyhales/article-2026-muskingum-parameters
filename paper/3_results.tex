@@ -44,12 +44,12 @@ Figure~\ref{fig:hydrography-travel-times} shows the cumulative distribution of r
   \end{landscape}
 }
 
-Figure~\ref{fig:hydrography-travel-times} shows the cumulative distribution of reach lengths as equivalent travel times, $k$,
-in the hydrography products. The travel time is calculated as $k = Length / velocity$ assuming constant 1~m/s velocity. Across all datasets,
-the length of reaches spans multiple orders of magnitude. The median reach length spans around 1.3~km in HydroSHEDS v2 to 7.4~km in GRIT. The
-analogous travel time given the assumed velocity is equivalently around 21 minutes to 2.0 hours. The combined distribution is used as representative
-of trends that apply to individual datasets. An equivalent figure for each dataset individually is provided in the appendix section~
-\ref{sec:appendix-hydrography-results}.
+Figure~\ref{fig:hydrography-travel-times} shows the cumulative distribution of reach lengths as equivalent travel times, $k$, in the hydrography products.
+The travel time is calculated as $k = Length / velocity$ assuming constant 1~m/s velocity.
+Across all datasets, the length of reaches spans multiple orders of magnitude.
+The median reach length spans around 1.3~km in HydroSHEDS v2 to 7.4~km in GRIT equivalent to about 21 minutes to 2.0 hours.
+The combined distribution is used as representative of trends that apply to individual datasets.
+Equivalent figures for each dataset individually are provided in appendix section~\ref{sec:appendix-hydrography-results}.
 
 \begin{figure}[htbp]
   \centering
@@ -58,15 +58,14 @@ of trends that apply to individual datasets. An equivalent figure for each datas
   \label{fig:hydrography-travel-times}
 \end{figure}
 
-The histogram is made combining the estimated travel times shown in Figure~\ref{fig:hydrography-travel-times} with the validity conditions in
-Equation~\ref{eq:validity-conditions}. The $\Delta t$ bins are on the x-axis with the same assumed constant velocity of 1~m/s and the
-corresponding $x = 0.25$. Figure~\ref{fig:dt_window_histogram} contains a histogram of the relative percentage of rivers across datasets which has
-all positive Muskingum coefficients for a given $\Delta t$. The $\Delta t$ which is valid for the largest percentage of rivers is between 26 and 33 minutes.
-These findings are incompatible with the common practice assuming that smaller time steps correlates with more accurate results. The NWM uses a
-5-minute time step \citep{read2023}, GRADES-hydroDL uses a 30-minute time step \citep{yang2025}, RFS used a 15-minute time step \citep{hales2022}.
-Various published modeling studies using RAPID have used 15-minute time steps in the San Antonio and Guadalupe basins of Texas using the NHDPlus
-\citep{david2011, emery2020} and the western United States \citep{david2019}, 30-minute time steps in France \citep{david2011hp} and the Mississippi
-River basin \citep{david2015}, and a 3-hour time step globally for GRADES \citep{lin2019}.
+The histogram in Figure~\ref{fig:dt_window_histogram} is made combining the estimated travel times shown in Figure~\ref{fig:hydrography-travel-times} with the validity conditions in Equation~\ref{eq:validity-conditions}.
+The $\Delta t$ bins are on the x-axis with the same assumed constant velocity of 1~m/s and the corresponding $x = 0.25$.
+Figure~\ref{fig:dt_window_histogram} contains a histogram of the relative percentage of rivers across datasets which have all positive Muskingum coefficients for a given $\Delta t$.
+The $\Delta t$ which is valid for the largest percentage of rivers is between 26 and 33 minutes.
+This finding contradicts the common practice to assuming that smaller time steps is a safer default or correlates with more accurate results.
+The NWM uses a 5-minute time step \citep{read2023}, GRADES-hydroDL uses a 30-minute time step \citep{yang2025} (previously 3 hours \citep{lin2019}), RFS used a 15-minute time step \citep{hales2022}.
+Some other published modeling studies using RAPID included the routing time step chosen.
+A 15-minute $\Delta t$ was used in Texas watersheds using the NHDPlus \citep{david2011, emery2020} and the western United States \citep{david2019}, 30-minute time steps in France \citep{david2011hp} and the Mississippi River basin \citep{david2015}.
 
 \begin{figure}[htbp]
   \centering
